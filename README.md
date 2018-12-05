@@ -1,2 +1,2 @@
 # learn
-Love the Web front end and march to Daniel.
+A repository for personal learning;
