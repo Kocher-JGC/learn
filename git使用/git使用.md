@@ -107,7 +107,7 @@ $ git branch -m <oldbranch> <newbranch> #重命名本地分支
 
 
 
-#### git fetch
+#### git fetch 获取远程仓库所有分支
 
 ##### FETCH_HEAD：
 
@@ -145,6 +145,7 @@ $ git remote rename 原名 新名 # 修改远程主机名
 $ git pull #更新远程分支（可以认为是git fetch+git merge)
 $ git pull <远程主机名> <远程分支名>:<本地分支名> # 远程分支是与当前分支合并
 # 取回远程主机某个分支的更新，再与本地的指定分支合并。
+$ git pull origin feacher #只更新origin下的feacher分支
 $ git pull --rebase <远程主机名> <远程分支名>:<本地分支名>
 # 如果远程主机删除了某个分支，默认情况下，git pull 不会在拉取远程分支的时候，删除对应的本地分支。这是为了防止，由于其他人操作了远程主机，导致git pull不知不觉删除了本地分支。
 # 使用-p解决
@@ -160,19 +161,65 @@ $ git fetch -p
 
 ```bash
 $ git push <远程主机名> <本地分支名>:<远程分支名>
-$ git push origin master
+$ git push origin master #只提交maser分支
 # 本地的master分支推送到origin主机的master分支。如果后者不存在，则会被新建。
 $ git push origin #将当前分支推送到origin主机
-$ git push origin :master
-# 等同于
-$ git push origin --delete master
+$ git push origin :master # 删除远程分支
+$ git push origin --delete master # 删除远程分支
 $ git push -u origin master #-u指定一个默认主机
 $ git push --all origin #将本地的所有分支都推送到远程主机
 $ git push --force origin # 强制推送
 $ git push origin --tags # 把tag也推送（默认不推）
 ```
 
+##### push 参数省略的理解
 
+场景1：
+
+​	远程仓库(upstream) 有一个feature分支
+
+​	本地仓库跟踪远程仓库upstream/feature分支，并且本地仓库中有一个localfeature分支
+
+场景2：
+
+​	远程仓库(upstream)有2个分支（feature和master）
+
+​	本地仓库有2个跟踪分别对应远程的2个分支，且本地有2个分支（localfeature和master）
+
+```bash
+[branch "localfeature"]
+   remote = upstream # 远程仓库
+   merge = refs/heads/feature # 远程仓库分支
+#所以执行 git pull 的时候git fetch 知道更新哪个仓库的以及合并哪个分支
+#再看下 remote 配置
+[remote "upstream"]
+   url = https://github.com/Kocher-JGC/learn.git
+   fetch = +refs/heads/*:refs/remotes/upstream/*
+   # 本地分支的所有内容对应映射的是远程upstream下的所有分支
+```
+
+```bash
+## 错误
+$ git push upstream  localfeature #省略冒号和后面的代表一致
+$ git push upstream HEAD # 等同于上面一个因为本地分支叫做localfeature
+# 这操作如果远程没有localfeature分支，那么将会创建并且和本地的localfeature分支产生关联
+$ git push upstream #只推送同名分支，如果名字不一致就拒绝推送；
+$ git push upstream : # 同上
+$ git push #因为分支名不一样所以不会推送任何内容
+# 因为repository省略，默认使用了branch.localfeature.remote的配置。没有这个配置则使用origin，没有origin就报错
+## 正确
+$ git push upstream localfeature:feature # 正确配置
+[remote "upstream"] # 在该配置中添加push配置也行
+   push = refs/heads/localfeature:refs/heads/feature
+```
+
+##### push.default 作用
+
+1. nothing：除非正确给了refspec参数，否则不推送任何信息。（每次都要写全参数，防止错误，而且参数不全会拒绝推送）
+2.  current：推送**当前分支**用来更新远程仓管**同名的分支**（如果没有则自动创建同名分支）[central（同一远程仓库）和non-central（不是同一远程仓库[如：多仓库]）都可以使用这个模式]
+3. upstream：push的分支会跟着你通常pull的分支。如：场景1， 本地localfeature跟踪的远程分支feature，所以push会push到远程分支 的feature分支上
+4. simple： `git push  upstream` 操作本地分支要和远程跟踪分支要一致才能推送成功。针对场景1：如果使用 `git push origin`  推送名字不一样的分支的时候，远程分支会创建一个与本地同名的分支，并跟踪。
+5. matching：只推送本地和远程a仓库都有的分支。场景2：使用 `git push upstream`  结果只推送master分支以及更新master分支的跟踪。localfeature分支不会被更新和推送。
 
 #### git checkout
 
@@ -270,6 +317,7 @@ $ git rm -f git-*.sh
 #### git log
 
 ```bash
+$ git log --oneline --decorate --graph --all #列出历史记录查看当前分支和最新获取数据分支的情况。
 $ git log # 查看所有分支提交历史(-n 表示显示多少条记录)
 $ git log --no-merges # 过滤merge操作的历史记录
 $ git log --merges #只显示merges历史记录
@@ -320,6 +368,21 @@ $ git show v1.0.0^{tree}#显示标签v1.0.0指向的树
 $ git show -s --format=%s v1.0.0^{commit} #显示标签v1.0.0指向的提交的主题
 $ git show next~10:Documentation/README#显示 Documentation/README 文件的内容，它们是 next 分支的第10次最后一次提交的内容
 $ git show master:Makefile master:t/Makefile #将Makefile的内容连接到分支主控的头部
+```
+
+### 远程协作
+
+#### git pull request
+
+```bash
+$ git checkout -b feature # 一般先建立一个新的分支
+$ git push origin feature # 然后把feature分支推送到远程的fork项目的中（也就是origin分支）
+# 然后在github网页上就可以创建pull request。接着项目的创建人就可以收到你的请求并处理（沟通、合并或拒绝）
+# 如果没问题就 merge pull request 合并完成后就会合并到origin分支
+### 注意：为了保证本地仓库代码的最新需要创建一个上游远程仓库
+$ git remote add upstearm [远程仓库地址] #创建远程仓库
+$ git fetch upstearm # 更新（上游）远程仓库代码
+$ git merge upstream/master # 合并上游分支到master分支
 ```
 
 
@@ -402,6 +465,4 @@ Hi username! You've successfully authenticated, but GitHub does not
 1. 设置完SSH记得设置global
 2. 重新连接的时候记得使用 `ssh-agent  -s` 和 `ssh-add ~/.ssh/id_rsa`  然后输入设置的密钥密码进行链接
 3. 报错就 `eval 'ssh-agent -s'`  转化为对象然后重新 ssh-add 进行链接
-
-pull Request
 
