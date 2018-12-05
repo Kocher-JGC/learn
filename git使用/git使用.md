@@ -397,7 +397,11 @@ Hi username! You've successfully authenticated, but GitHub does not
 # provide shell access.
 ```
 
+### SSH连接注意：
 
+1. 设置完SSH记得设置global
+2. 重新连接的时候记得使用 `ssh-agent  -s` 和 `ssh-add ~/.ssh/id_rsa`  然后输入设置的密钥密码进行链接
+3. 报错就 `eval 'ssh-agent -s'`  转化为对象然后重新 ssh-add 进行链接
 
 pull Request
 
