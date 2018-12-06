@@ -133,6 +133,23 @@ $ git branch -m <oldbranch> <newbranch> #重命名本地分支
 -a ==> --all:所有
 ```
 
+##### [branch] 配置的理解
+
+```bash
+$ git checkout -b v0 # 假设你创建了一个v0分支
+$ git push origin v0 # 先使用push把v0分支加到远程(origin)仓库中
+$ git pull #而当你使用git pull的时候 git就会提示你补全参数或者设置branch配置
+$ git branch --set-upstram-to=origin/v0 v0 # 设置branch（分支配置）
+# 指定远程跟踪分支origin/v0 对应的是v0分支
+# 这时候 .git/config会多出如下信息
+[branch "v0"] #本地分支
+	remote = origin # 远程仓库
+	merge = refs/heads/v0 # 远程仓库的v0分支
+# 这时候再使用 git pull 的时候 git 会自动从配置中获取参数
+# git pull ==> git pull origin v0:v0
+
+```
+
 
 
 #### git fetch 获取远程仓库所有分支
@@ -163,6 +180,47 @@ $ git remote show 主机名 # 查看主机的详细信息
 $ git remote add 主机名 网址 # 添加远程主机
 $ git remote rm 主机名 #删除远程主机
 $ git remote rename 原名 新名 # 修改远程主机名
+```
+
+##### [remote] 配置的理解
+
+理解知识点（url、fetch、push、refspec）
+
+假设配置如下：
+
+```bash
+[remote "origin"] # 此处的origin对应的是url的内容 所以可以直接使用origin = url后面的内容
+	url = https://github.com/Kocher-JGC/learn.git
+	fetch = +refs/heads/*:refs/remotes/origin/* # 等号后面的称为refspec
+$ git fetch origin # 应用的就是上面的配置，而当分支配置指向origin时候 origin也可以省略 如下
+[branch "master"] # master 分支的remote指向origin 所以可以省略origin（远程仓库地址）参数
+	remote = origin
+	merge = refs/heads/master 
+在.git/refs 目录下有三个目录 
+heads 本地目录  里面有多少个文件对应本地多少个分支，文件里面的信息当前分支指向的commit对象
+# 内容如：6e1ad8b0054f8bdaf8c361ff90d32597ed4e611c
+remotes 远程目录 同理所以远程跟踪分支的文件目录为 ./.git/refs/remotes/origin/master
+# 他们的内容指向是当前的历史记录的 ‘分支指针记录’
+tags 本地的tags标签
+
+## 重点理解
+1、+ 表示强制non-fast-forword的fetch操作
+# 假设 小A 跟踪了2个远程仓库 小A的本地仓库的版本是 C1 -> C2
+# 而另一个远程仓库的版本是 C1 -> C3 
+# 当小A执行 git fetch 操作的时候 不带+号。
+# 根据历史原则会拒绝推送操作，理论上本地会生成2个分支 1、C1 -> C2 2、C1 -> C3
+# 当使用+号的情况会强制讲2个分支合并成一个分支
+2、refs/heads/* # 远程仓库下的所有分支
+3、refs/remotes/origin/* # 本地的远程跟踪分支下的所有分支
+```
+
+```bash
+[remote "origin"] 
+	url = https://github.com/Kocher-JGC/learn.git
+	fetch = +refs/heads/qa/*:refs/remotes/origin/*
+	push = refs/heads/*:refs/heads/qa/*
+# 易看出：当前本地的origin跟踪的是远程仓管的qa分支
+# 所有push配置的时候 heads下的所有分支就要对应远程的qa下的所有分支 
 ```
 
 
@@ -223,7 +281,7 @@ $ git push origin --tags # 把tag也推送（默认不推）
 [remote "upstream"]
    url = https://github.com/Kocher-JGC/learn.git
    fetch = +refs/heads/*:refs/remotes/upstream/*
-   # 本地分支的所有内容对应映射的是远程upstream下的所有分支
+   # 远程仓库heads下的所有分支指向本地的远程跟踪分支upstream下的所有分支
 ```
 
 ```bash
