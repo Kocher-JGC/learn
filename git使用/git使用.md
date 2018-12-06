@@ -1,5 +1,15 @@
 # git使用
 
+### 这不是一套从头到位的学习文档，只是一套要点的查找和理解的学习文档
+
+### 学习要点
+
+1. 简单使用git clone + git pull（或git fetch + git merge） + git push进行更新和提交代码以及SSH到github上
+2. 通过简单的例子理解什么是远程跟踪分支、跟踪分支等等的概念
+3. 理解清楚概念后就进行 git的操作学习，加深分支、工作区、暂存区等概念理解。
+4. 重点理解（git remote 、git branch、git checkout 、git push 和 push.default）
+5. 应用：①使用 git pull request 进行远程协作开发。②项目应用：使用 git bisect 、git  grep、git log、git blame、git diff等指令
+
 ### 工作区、暂存区、本地仓库、远程仓库
 
 ##### 概念
@@ -37,6 +47,22 @@
 > 注意：开发过程中，必须创建自己分支进行功能开发，不允许直接在master分支中进行功能开发、修改、删除等操作。以免误操作或操作出错等情况出现，污染了远程仓库的主干分支master，导致功能代码无法继续使用，也会影响到其他人的使用。
 >
 
+### 远程操作理解
+
+**分支只是指向某个commit对象的引用**
+
+跟踪分支（tracking branch）：
+
+远程跟踪分支（remote tracking branch）：
+
+假设在自己的远程仓库clone一个项目的时候：
+
+1. 远程仓库的分支（master/HEAD）
+2. 指向本地克隆的只读分支origin/master
+3. 并且根据本地的origin/master 分支 创建一个用户可写的跟踪分支（master/HEAD）
+4. （1）当本地的master修改然后提交的时候，把master分支的内容push到远程仓库的master，远程仓库修改完成后本地的origin/master分支会指向本地master刚刚提交的内容的版本
+5. （2）当远程仓库有新内容的时候，使用git fetch 会把内容更新到本地的只读分支origin/master，当使用 git merge  origin/master 就可以把origin/master的内容merge到当前分支中（master分支）
+6. （3）git pull == git fetch + git merge
 
 ### 基本操作
 
@@ -331,7 +357,56 @@ $ git log --after date --before date # 日期之间
 $ git log --relative-date #好像是8小时之前
 ```
 
+```bash
+$ git log -S(函数名或变量名) # 注意没有空格
+$ git log -SLOG_BUF_MAX # 如
+$ git log -GLOG_BUF_MAX # 查看版本改变的信息
+$ git log -p -- git_log.c #查看改变信息
+$ git log -L :git_deflate_bound:git_log.c #查看方法修改情况
+$ git log -L '/方法名/' ,/^}/:git_log.c #也可以查找
+$ git log -L 2,5[+3]:git_log.c # 根据行号或者偏移量查找
+```
 
+#### git bisect 二分检查版本问题版本
+
+假设有 c1 - c5 5个版本
+
+```bash
+$ git bisect start # 开始 
+$ git bisect bad #标记当前版本为bad（c5为有问题的版本）
+$ git bisect good c1 # 标记c1为没问题版本
+# git 自动跳到c3 版本
+$ git bisect bad # 标记c3版本为bad
+$ git bisect good # 跳到b2版本，标记good（没问题版本）
+# git会告诉你问题版本是c3 并且告诉你那些文件什么内容修改
+$ git diff c2 c3 （版本号前7位）#进行查看修改情况
+$ git bisect reset # 结束
+# git bisect skip # 可以跳过当前版本，默认跳到比当前版本下一个版本
+### 当标记错误的时候
+$ git bisect log > bisect.log # 生成日志文件修改错误标记
+$ git bisect reset # 结束本次查找
+$ git bisect replay bisect.log # 根据日志执行到你修改的步骤
+```
+
+#### git  grep 查找内容
+
+```bash
+$ git grep -n gmtime_r #显示查找的内容 （-n表示输出行号）
+$ git grep -count gmtime_r # 统计出现次数
+$ git grep -p gmtime_r *.c# -p参数查找那些函数或者哪些方法里面调用 *.c限制文件
+$ git grep -e '正则'
+$ git grep -e 'lishi' --or -e 'wangwu' # --or 默认可以省略
+$ git grep -e 'zhangsan' --and \( -e 'wangwu' --or --not -e 'lishi' \)
+# 有张三 且有（王五或者没有李四）
+$ git grep -e 'zhangsan' --and \( -e 'wangwu' --or --not -e 'lishi' \) HEAD~ # 搜索上一个版本
+```
+
+#### git blame定位代码责任人
+
+```bash
+$ git blame git_blame.c #查看每一行的代码责任人
+$ git blame -L 3,5[+3] git_blame.c # 使用行号/偏移量定位代码责任人
+```
 
 #### git status  命令用于显示工作目录和暂存区的状态
 
@@ -347,8 +422,6 @@ $ git commit
 $ git status
 # nothing to commit (working directory clean)
 ```
-
-
 
 #### git tag  查看版本号 
 
