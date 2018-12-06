@@ -7,7 +7,7 @@
 1. 简单使用git clone + git pull（或git fetch + git merge） + git push进行更新和提交代码以及SSH到github上
 2. 通过简单的例子理解什么是远程跟踪分支、跟踪分支等等的概念
 3. 理解清楚概念后就进行 git的操作学习，加深分支、工作区、暂存区等概念理解。
-4. 重点理解（git remote 、git branch、git checkout 、git push 和 push.default）
+4. 重点理解（git remote 、git branch、git checkout 、git pull 、git push 和 push.default）
 5. 应用：①使用 git pull request 进行远程协作开发。②项目应用：使用 git bisect 、git  grep、git log、git blame、git diff等指令
 
 ### 工作区、暂存区、本地仓库、远程仓库
@@ -147,10 +147,25 @@ $ git branch --set-upstram-to=origin/v0 v0 # 设置branch（分支配置）
 	merge = refs/heads/v0 # 远程仓库的v0分支
 # 这时候再使用 git pull 的时候 git 会自动从配置中获取参数
 # git pull ==> git pull origin v0:v0
-
 ```
 
-
+```bash
+## 配置[branch]的几种方式：
+$ git branch (--set-upstream-to=<upstream> | -u <upstream>) [<branchname>]
+# 对应 $ git branch --set-upstram-to=origin/v0 v0
+$ git branch [--set-upstream | --track] <branchname> [<start-point>]
+# 对应 $ git branch --track v1(本地) origin/v0(远程)
+$ git push [-u | --set-upstream] [<repository> [<refspec>...]]
+# 对应 $ git push -u origin v2 #推送分支并创建本地配置
+$ git checkout从远程跟踪分支支指向位置检出对应分支支时自自动设置
+# $ git fetcch origin #先更新远程仓库内容
+# $ git checkout v3 #直接切换分支并且创建配置
+$ git config branch.[branchname].remote [repository]
+$ git config branch.[branchname].merge refs/heads/[branchname]
+# $ git config branch.v4.remote origin 
+# $ git config branch.v4.merge refs/heads/master 
+# 直接手写[branch]配置来跟踪远程仓库
+```
 
 #### git fetch 获取远程仓库所有分支
 
