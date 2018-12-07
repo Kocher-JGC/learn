@@ -402,6 +402,7 @@ $ git reset --soft [HEAD^]  #回滚最近一次提交（清除索引和工作区
 $ git reset --hard HEAD~3  #删除最近3次
 $ git reset --merge ORIG_HEAD # 避免在回滚时清除工作区
 $ git reset --hard ORIG_HEAD #回滚刚才的merge操作
+$ git revert HEAD
 ```
 
 #### git rm删除
