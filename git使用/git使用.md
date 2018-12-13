@@ -392,6 +392,7 @@ $ git add Hello?   # 将以Hello开头后面只有一位的文件的修改提交
 ```bash
 $ git commit –m “本次提交描述”
 $ git commit –am “本次提交描述” 或 git commit –a –m“本次提交描述” # 相当于 git add . + git commit -m
+#同时也注意 commit -am 不能添加新文件 而 git add . 可以
 # 通过使用--interactive或--patch选项与git commit命令一起确定除了索引中的内容之外哪些文件或hunks应该是提交的一部分，然后才能完成操作。
 ```
 
