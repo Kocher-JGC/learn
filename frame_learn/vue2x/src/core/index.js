@@ -15,9 +15,10 @@ initGlobalAPI(Vue)
 
 /** 挂载 $isServer 和$ssrContext 属性 **/
 Object.defineProperty(Vue.prototype, '$isServer', {
-  get: isServerRendering
+  get: isServerRendering //判断是否服务端渲染
 })
 
+// ssr上下文？？
 Object.defineProperty(Vue.prototype, '$ssrContext', {
   get () {
     /* istanbul ignore next */

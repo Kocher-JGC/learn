@@ -33,6 +33,7 @@ extend(Vue.options.directives, platformDirectives)
 extend(Vue.options.components, platformComponents)
 
 // install platform patch function
+// 如果是浏览器环境下把path加载到Vue的原型上。（path真正渲染DOM的函数）
 Vue.prototype.__patch__ = inBrowser ? patch : noop
 
 // public mount method
@@ -41,7 +42,7 @@ Vue.prototype.$mount = function (
   hydrating?: boolean
 ): Component {
   el = el && inBrowser ? query(el) : undefined
-  return mountComponent(this, el, hydrating)
+  return mountComponent(this, el, hydrating) // $mount真正调用的方法
 }
 
 // devtools global hook

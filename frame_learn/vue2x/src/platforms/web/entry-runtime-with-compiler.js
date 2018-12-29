@@ -9,6 +9,7 @@ import { query } from './util/index'
 import { compileToFunctions } from './compiler/index'
 import { shouldDecodeNewlines, shouldDecodeNewlinesForHref } from './util/compat'
 
+// 获取选择器的HTML模板
 const idToTemplate = cached(id => {
   const el = query(id)
   return el && el.innerHTML
@@ -32,6 +33,7 @@ Vue.prototype.$mount = function (
 
   const options = this.$options
   // resolve template/el and convert to render function
+  // render函数存在直接调用mount
   if (!options.render) {
     /** Compiler  版本**/
     /** 如果没有定义render函数则检测template
@@ -96,6 +98,7 @@ Vue.prototype.$mount = function (
 /**
  * Get outerHTML of elements, taking care
  * of SVG elements in IE as well.
+ * 获取元素的outerhtml，同时注意ie中的svg元素。
  */
 function getOuterHTML (el: Element): string {
   if (el.outerHTML) {
