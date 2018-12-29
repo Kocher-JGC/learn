@@ -75,6 +75,8 @@
 4. platforms/web/entry-runtime-with-compiler.js
 
    - 修改$mount 方法，用于编译template和compileToFunctions（通过template创建render和staticRender）以及性能埋点
+     - **compileToFunctions**
+     - 
 
 ## new Vue（_init(options)）
 
