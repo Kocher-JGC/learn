@@ -53,7 +53,7 @@
 
    - initGlobalAPI (挂载util、set、delete、nextTick、options、_base、options.components、use、mixin、extend、assetRegisters)
    - 挂载$isServer和$ssrContext属性
-   - 为ssr运行时帮助程序安装公开FunctionalRenderContext 
+   - 为ssr运行时帮助程序安装公开FunctionalRenderContext
 
 3. platforms/web/runtime/index.js(挂载平台相关的)
 
@@ -84,7 +84,7 @@
 4. 开发环境初始化代理、生产环境渲染代理直接是vm （区别何在？）
 5. 储存_self = vm
 6. initLifecycle(vm) // 初始化生命周期钩子
-7.  initEvents(vm) // 初始化事件中心   
+7.  initEvents(vm) // 初始化事件中心
 8.  initRender(vm) // 初始化渲染
 9.  callHook(vm, 'beforeCreate')
 10.  // 解决注入问题？
@@ -129,12 +129,12 @@
 
 1. vm.$options 获取 render和_parentVnode
 2. 开发环境下重置渲染状态（问题为何开发环境要重置？）
-3. 获取$scopedSlots 
+3. 获取$scopedSlots
 4. vm.$vnode = _parentVnode;
 5. vnode = render.call(vm._renderProxy, vm.$createElement) //渲染virtualDOM
    - render
    - vm._renderProxy
-   -  vm.$createElement
+   - vm.$createElement
 6. try错误处理
 7. vnode.parent = _parentVNode // set parent
 8. return vnode
