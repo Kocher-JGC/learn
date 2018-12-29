@@ -87,6 +87,7 @@ export function withMacroTask (fn: Function): Function {
   })
 }
 
+// nextTick 执⾏所有 watcher 的run ，最后执⾏它们的回调函数
 export function nextTick (cb?: Function, ctx?: Object) {
   let _resolve
   callbacks.push(() => {

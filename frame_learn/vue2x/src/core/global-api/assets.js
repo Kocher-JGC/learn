@@ -3,6 +3,7 @@
 import { ASSET_TYPES } from 'shared/constants'
 import { isPlainObject, validateComponentName } from '../util/index'
 
+// 创建全局组件、指令、过滤器的注册方法
 export function initAssetRegisters (Vue: GlobalAPI) {
   /**
    * Create asset registration methods.
@@ -16,6 +17,7 @@ export function initAssetRegisters (Vue: GlobalAPI) {
         return this.options[type + 's'][id]
       } else {
         /* istanbul ignore if */
+        // 如果开发环境下检测component的可用性
         if (process.env.NODE_ENV !== 'production' && type === 'component') {
           validateComponentName(id)
         }

@@ -2,9 +2,10 @@
 
 import { toArray } from '../util/index'
 
-/** 使用插件、将插件装载到installedPlugins中
- *  并且如果插件存在install方法调用该方法，如果插件本身是个函数那么就直接调用
- *  最后装载插件
+/** 使用该方法可以向use上挂载新的插件（如使用vuex和vueRouter）
+ * 如果install方法存在使用install挂载
+ * 如果插件为func则调用func挂载
+ * 最后把插件push到vue._installedPlugins数组中
 **/
 export function initUse (Vue: GlobalAPI) {
   Vue.use = function (plugin: Function | Object) {
