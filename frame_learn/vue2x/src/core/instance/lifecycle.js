@@ -21,24 +21,29 @@ import {
 export let activeInstance: any = null
 export let isUpdatingChildComponent: boolean = false
 
+/** 初始化生命周期 **/
 export function initLifecycle (vm: Component) {
   const options = vm.$options
 
   // locate first non-abstract parent
+  // 定位第一个非抽象父级
   let parent = options.parent
-  if (parent && !options.abstract) {
+  if (parent && !options.abstract) { // 有父而且不是抽象的
+    // 迭代找到第一个不是抽象的父级
     while (parent.$options.abstract && parent.$parent) {
       parent = parent.$parent
     }
-    parent.$children.push(vm)
+    parent.$children.push(vm) // 因为找到父级了，所以可以把子级push进去
   }
 
-  vm.$parent = parent
+  vm.$parent = parent // 在上面找到父级，然后赋值
   vm.$root = parent ? parent.$root : vm
 
+  // 定义子级数组和子组件应用的对象
   vm.$children = []
   vm.$refs = {}
 
+  // 定义一些记录钩子状态的属性
   vm._watcher = null
   vm._inactive = null
   vm._directInactive = false
