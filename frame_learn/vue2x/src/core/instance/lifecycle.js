@@ -44,43 +44,54 @@ export function initLifecycle (vm: Component) {
   vm.$refs = {}
 
   // 定义一些记录钩子状态的属性
-  vm._watcher = null
-  vm._inactive = null
-  vm._directInactive = false
-  vm._isMounted = false
-  vm._isDestroyed = false
-  vm._isBeingDestroyed = false
+  vm._watcher = null // 更新的观察者
+  vm._inactive = null // 活跃状态
+  vm._directInactive = false // 直接激活
+  vm._isMounted = false // 是否安装
+  vm._isDestroyed = false // 是否销毁
+  vm._isBeingDestroyed = false // 正在被破坏
 }
 
 export function lifecycleMixin (Vue: Class<Component>) {
   Vue.prototype._update = function (vnode: VNode, hydrating?: boolean) {
-    const vm: Component = this
-    const prevEl = vm.$el
-    const prevVnode = vm._vnode
-    const prevActiveInstance = activeInstance
-    activeInstance = vm
-    vm._vnode = vnode
+    const vm: Component = this // 记录this
+    const prevEl = vm.$el // 记录当前元素为上一元素
+    const prevVnode = vm._vnode // 记录当前vnode为上一vnode
+    const prevActiveInstance = activeInstance // 记录上一活跃实例
+    activeInstance = vm // 记录当前活跃实例
+    vm._vnode = vnode // 传入的渲染render // 记录当前渲染的vnode
     // Vue.prototype.__patch__ is injected in entry points
     // based on the rendering backend used.
-    if (!prevVnode) {
+    // Vue.prototype.__patch__ 是根据所使用的渲染后端注入入口点的。
+    if (!prevVnode) { // 是否首次渲染
       // initial render
       vm.$el = vm.__patch__(vm.$el, vnode, hydrating, false /* removeOnly */)
     } else {
       // updates
       vm.$el = vm.__patch__(prevVnode, vnode)
     }
+    /** （为何这样） **/
+    // 值从vm改变成上一活跃实例prevActiveInstance
     activeInstance = prevActiveInstance
     // update __vue__ reference
+    /** 作出一下2个改变有何意义？？ **/
     if (prevEl) {
       prevEl.__vue__ = null
     }
     if (vm.$el) {
       vm.$el.__vue__ = vm
     }
+    // 如果父级是临时的，也要更新它的$el
     // if parent is an HOC, update its $el as well
+    /**
+     * vm.$vnode = opts._parentVnode (compiler)
+     * vm.$parent (第一个非抽象父级)._vnode最后渲染的render
+     * vm.$vnode === vm.$parent._vnode 为什么可以证明是临时的
+     * **/
     if (vm.$vnode && vm.$parent && vm.$vnode === vm.$parent._vnode) {
       vm.$parent.$el = vm.$el
     }
+    // 调用程序调用更新的钩子，以确保在父级的更新钩子中更新子级。
     // updated hook is called by the scheduler to ensure that children are
     // updated in a parent's updated hook.
   }
