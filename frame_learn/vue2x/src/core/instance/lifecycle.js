@@ -96,6 +96,7 @@ export function lifecycleMixin (Vue: Class<Component>) {
     // updated in a parent's updated hook.
   }
 
+  /** 重新渲染本身、插槽和子组件 （主动调用_watcher.update()） **/
   Vue.prototype.$forceUpdate = function () {
     const vm: Component = this
     if (vm._watcher) {
@@ -174,6 +175,7 @@ export function mountComponent (
       }
     }
   }
+  // 挂载前的钩子
   callHook(vm, 'beforeMount')
 
   let updateComponent
@@ -213,9 +215,11 @@ export function mountComponent (
   }, true /* isRenderWatcher */)
   hydrating = false
 
-  // manually mounted instance, call mounted on self
+  // manually mounted inst ance, call mounted on self
   // mounted is called for render-created child components in its inserted hook
   if (vm.$vnode == null) {
+    // 在初始化的时候 $vnode为null但是一旦调用_rener后$vnode将变成_parentVnode
+    // 并且记录实例渲染状态 调用钩子
     vm._isMounted = true
     callHook(vm, 'mounted')
   }
@@ -331,6 +335,7 @@ export function deactivateChildComponent (vm: Component, direct?: boolean) {
 
 export function callHook (vm: Component, hook: string) {
   // #7573 disable dep collection when invoking lifecycle hooks
+  // 关闭dep收集当执行生命周期钩子的时候
   pushTarget()
   const handlers = vm.$options[hook]
   if (handlers) {

@@ -49,14 +49,17 @@ export function eventsMixin (Vue: Class<Component>) {
   const hookRE = /^hook:/
   Vue.prototype.$on = function (event: string | Array<string>, fn: Function): Component {
     const vm: Component = this
+    // 数组递归调用
     if (Array.isArray(event)) {
       for (let i = 0, l = event.length; i < l; i++) {
         this.$on(event[i], fn)
       }
     } else {
+      // 向当前实例push事件
       (vm._events[event] || (vm._events[event] = [])).push(fn)
       // optimize hook:event cost by using a boolean flag marked at registration
       // instead of a hash lookup
+      // 注册时候标记事件减少开销（？？）
       if (hookRE.test(event)) {
         vm._hasHookEvent = true
       }
@@ -66,6 +69,7 @@ export function eventsMixin (Vue: Class<Component>) {
 
   Vue.prototype.$once = function (event: string, fn: Function): Component {
     const vm: Component = this
+    // once事件就是为事件包一层自己关闭的函数 ，再调用on
     function on () {
       vm.$off(event, on)
       fn.apply(vm, arguments)
@@ -77,29 +81,30 @@ export function eventsMixin (Vue: Class<Component>) {
 
   Vue.prototype.$off = function (event?: string | Array<string>, fn?: Function): Component {
     const vm: Component = this
-    // all
+    // all 不传值销毁所有
     if (!arguments.length) {
       vm._events = Object.create(null)
       return vm
     }
-    // array of events
+    // array of events 数组递归销毁
     if (Array.isArray(event)) {
       for (let i = 0, l = event.length; i < l; i++) {
         this.$off(event[i], fn)
       }
       return vm
     }
-    // specific event
+    // specific event // 找到特定事件是否存在
     const cbs = vm._events[event]
     if (!cbs) {
       return vm
     }
-    if (!fn) {
+    if (!fn) { // 如果不是销毁特定的事件下的特定方法，那么全部销毁
       vm._events[event] = null
       return vm
     }
     if (fn) {
       // specific handler
+      // 循环查找并销毁指定的cb/cb.fn
       let cb
       let i = cbs.length
       while (i--) {
@@ -127,6 +132,7 @@ export function eventsMixin (Vue: Class<Component>) {
         )
       }
     }
+    // 触发单个或者多个特定事件类型的事件 （所以一个事件类型可以绑定多次，可不可以当观察者使用？？）
     let cbs = vm._events[event]
     if (cbs) {
       cbs = cbs.length > 1 ? toArray(cbs) : cbs
