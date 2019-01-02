@@ -52,7 +52,7 @@
 2. core/index
 
    - initGlobalAPI (挂载util、set、delete、nextTick、options、_base、options.components、use、mixin、extend、assetRegisters)
-   - 挂载$isServer和$ssrContext属性
+   - 挂载\$isServer和\$ssrContext属性
    - 为ssr运行时帮助程序安装公开FunctionalRenderContext
 
 3. platforms/web/runtime/index.js(挂载平台相关的)
@@ -97,7 +97,7 @@
 15. initProvide(vm) // resolve provide after data/props
 16. callHook(vm, 'created')
 17. 埋点结束
-18. 如果有el则调用$mount渲染DOM
+18. <font color=#DB5C64>如果有el则调用$mount渲染DOM</font>
 
 ## $mount挂载vm实例
 
@@ -113,16 +113,16 @@
    - 如果有el则直接拿el的DOM字符串作为template
    - 再进行template的处理
      1. 编译埋点开始
-     2. 进行render、staticRenderFns的生成
+     2. <font color=#DB5C64>进行render、staticRenderFns的生成</font>
      3. 编译埋点结束
-3. 最后调用真正的$moount方法mountComponent
+3. 最后调用真正的$moount方法<font color=#DB5C64>mountComponent</font>
 
 ### mountComponent
 
 1. 调用beforeMount钩子
 2. 生产环境下直接组装updateComponent = ()=> { vm._update(vm._render(),hydrating) }
 3. 开发环境下对vm.render和vm.update的调用进行性能埋点。
-4. new Watcher() 实例化监听者 （用于监听数据更新）
+4. <font color=#DB5C64>new Watcher() 实例化监听者 （用于监听数据更新）</font>
    - Watcher
 5. 最后记录渲染完成和调用mounted钩子
 6. 问题：如果调用到_render来渲染Virtual DOM
@@ -133,10 +133,10 @@
 2. 开发环境下重置渲染状态（问题为何开发环境要重置？）
 3. 获取$scopedSlots
 4. vm.$vnode = _parentVnode;
-5. vnode = render.call(vm._renderProxy, vm.$createElement) //渲染virtualDOM
+5. <font color=#DB5C64>vnode = render.call(vm._renderProxy, vm.$createElement) //渲染virtualDOM</font>
    - render
-   - vm._renderProxy
-   - vm.$createElement
+   - vm._renderProxy // 开发环境下initProxy/生产直接就是vue
+   - vm.$createElement // initRender生产的createElement
 6. try错误处理
 7. vnode.parent = _parentVNode // set parent
 8. return vnode
