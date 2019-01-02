@@ -3,7 +3,7 @@
 import { ASSET_TYPES } from 'shared/constants'
 import { isPlainObject, validateComponentName } from '../util/index'
 
-// 创建全局组件、指令、过滤器的注册方法
+// 创建全局组件、指令、过滤器的注册方法 有点想不懂为何这样设计
 export function initAssetRegisters (Vue: GlobalAPI) {
   /**
    * Create asset registration methods.

@@ -59,7 +59,7 @@ export function initGlobalAPI (Vue: GlobalAPI) {
   extend(Vue.options.components, builtInComponents)
 
   initUse(Vue) // 挂载Use静态方法
-  initMixin(Vue) // 挂载mixin静态方法 该方法向options中混入（合并）新选项
+  initMixin(Vue) // 挂载mixin静态方法 该方法向options中混入（合并）新选项（调用mergeOptions）
   initExtend(Vue) // 挂载extend构建子类的函数
   initAssetRegisters(Vue) // 创建全局组件、指令、过滤器的注册方法
 }
