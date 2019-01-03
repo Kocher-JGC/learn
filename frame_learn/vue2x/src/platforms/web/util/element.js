@@ -59,6 +59,7 @@ export function isUnknownElement (tag: string): boolean {
   }
   tag = tag.toLowerCase()
   /* istanbul ignore if */
+  // 用于缓存做判断，因为 document.createElement 开销大
   if (unknownElementCache[tag] != null) {
     return unknownElementCache[tag]
   }

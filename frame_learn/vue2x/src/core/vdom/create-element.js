@@ -54,7 +54,7 @@ export function _createElement (
   children?: any,
   normalizationType?: number
 ): VNode | Array<VNode> {
-  // __ob__ 是啥 ，为什么如果存在就报错 然后返回空vnode
+  // __ob__ 是否为响应式数据，为什么如果存在就报错 然后返回空vnode
   // data type == any
   if (isDef(data) && isDef((data).__ob__)) {
     process.env.NODE_ENV !== 'production' && warn(
