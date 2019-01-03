@@ -2,6 +2,7 @@
 
 import * as nodeOps from 'web/runtime/node-ops'
 import { createPatchFunction } from 'core/vdom/patch'
+// web平台操作的各种类型的方法
 import baseModules from 'core/vdom/modules/index'
 import platformModules from 'web/runtime/modules/index'
 

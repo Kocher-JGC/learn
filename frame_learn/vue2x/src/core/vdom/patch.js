@@ -34,6 +34,7 @@ const hooks = ['create', 'activate', 'update', 'remove', 'destroy']
 
 function sameVnode (a, b) {
   return (
+    // key 相等 || （tag/是否注释节点/data是否定义/是否相同的输入）
     a.key === b.key && (
       (
         a.tag === b.tag &&
@@ -41,6 +42,7 @@ function sameVnode (a, b) {
         isDef(a.data) === isDef(b.data) &&
         sameInputType(a, b)
       ) || (
+        // 是否异步的占位符节点 且 异步工厂 且异步工厂的错误没有定义
         isTrue(a.isAsyncPlaceholder) &&
         a.asyncFactory === b.asyncFactory &&
         isUndef(b.asyncFactory.error)
@@ -48,7 +50,11 @@ function sameVnode (a, b) {
     )
   )
 }
-
+/**
+ * 用i很好的起到中间作用
+ * data定义==>attrs定义==>type
+ * input 类型相等 而且是文本输入的类型（text,number,password,search,email,tel,url）
+ *  **/
 function sameInputType (a, b) {
   if (a.tag !== 'input') return true
   let i
@@ -67,12 +73,14 @@ function createKeyToOldIdx (children, beginIdx, endIdx) {
   return map
 }
 
+/** 巧妙利用函数的柯里化 根据平台的不一样 、利用闭包的特性储存（属性、方法） **/
 export function createPatchFunction (backend) {
   let i, j
   const cbs = {}
 
   const { modules, nodeOps } = backend
 
+  /** 钩子函数的处理 **/
   for (i = 0; i < hooks.length; ++i) {
     cbs[hooks[i]] = []
     for (j = 0; j < modules.length; ++j) {
@@ -96,6 +104,7 @@ export function createPatchFunction (backend) {
     return remove
   }
 
+  /** 找到该元素的父级再删除 **/
   function removeNode (el) {
     const parent = nodeOps.parentNode(el)
     // element may have already been removed due to v-html / v-text
@@ -104,18 +113,21 @@ export function createPatchFunction (backend) {
     }
   }
 
+  /** 是否未知节点 **/
   function isUnknownElement (vnode, inVPre) {
     return (
       !inVPre &&
-      !vnode.ns &&
+      !vnode.ns && // 没有命名空间
       !(
         config.ignoredElements.length &&
+        // 是否忽略的元素
         config.ignoredElements.some(ignore => {
           return isRegExp(ignore)
             ? ignore.test(vnode.tag)
             : ignore === vnode.tag
         })
       ) &&
+      // 在web平台中不能通过document.createElement创建的元素
       config.isUnknownElement(vnode.tag)
     )
   }
@@ -137,10 +149,14 @@ export function createPatchFunction (backend) {
       // potential patch errors down the road when it's used as an insertion
       // reference node. Instead, we clone the node on-demand before creating
       // associated DOM element for it.
-      vnode = ownerArray[index] = cloneVNode(vnode)
+      // 这个Vnode在以前的渲染中使用过！
+      // 现在它被用作一个新的节点，当它被用作插入引用节点时，覆盖它的ELM会导致潜在的补丁错误。
+      // 相反，我们在创建关联的DOM元素。
+      vnode = ownerArray[index] = cloneVNode(vnode) // new 一个 Vnode 然后并赋值属性
     }
 
-    vnode.isRootInsert = !nested // for transition enter check
+    vnode.isRootInsert = !nested // for transition enter check // 对于转换输入检查
+    // 有data定义和是componentInstance就去实例component和插入真实dom
     if (createComponent(vnode, insertedVnodeQueue, parentElm, refElm)) {
       return
     }
@@ -209,8 +225,11 @@ export function createPatchFunction (backend) {
 
   function createComponent (vnode, insertedVnodeQueue, parentElm, refElm) {
     let i = vnode.data
+    // 有数据定义 检查和调用init钩子
     if (isDef(i)) {
+      // 是一个组件实例而且 keepAlive ==> 标记重新激活
       const isReactivated = isDef(vnode.componentInstance) && i.keepAlive
+      // 钩子定义 而且 钩子中的init方法定义 调用 init 传入vnode
       if (isDef(i = i.hook) && isDef(i = i.init)) {
         i(vnode, false /* hydrating */)
       }
@@ -218,10 +237,15 @@ export function createPatchFunction (backend) {
       // it should've created a child instance and mounted it. the child
       // component also has set the placeholder vnode's elm.
       // in that case we can just return the element and be done.
+      // 在调用init hook之后，如果vnode是子组件，那么它应该创建一个子实例并装入它。
+      // 子组件还设置了占位符vnode的elm。在这种情况下，我们只需返回元素并完成。
+      /** 确定是组件的实例以后 执行init 和创建 **/
       if (isDef(vnode.componentInstance)) {
+        // 初始化组件 ==> 向insertedVnodeQueue push vnode
         initComponent(vnode, insertedVnodeQueue)
-        insert(parentElm, vnode.elm, refElm)
+        insert(parentElm, vnode.elm, refElm) // 插入真实的dom
         if (isTrue(isReactivated)) {
+          // 重新激活组件
           reactivateComponent(vnode, insertedVnodeQueue, parentElm, refElm)
         }
         return true
@@ -230,19 +254,24 @@ export function createPatchFunction (backend) {
   }
 
   function initComponent (vnode, insertedVnodeQueue) {
+    // 如果vnode未插入 则在insertedVnodeQueue push vnode.data.pendingInsert
     if (isDef(vnode.data.pendingInsert)) {
       insertedVnodeQueue.push.apply(insertedVnodeQueue, vnode.data.pendingInsert)
       vnode.data.pendingInsert = null
     }
+    // 拿到组件实例下的$el
     vnode.elm = vnode.componentInstance.$el
+    /** 可服用的，调用创建钩子，设置scope **/
     if (isPatchable(vnode)) {
       invokeCreateHooks(vnode, insertedVnodeQueue)
       setScope(vnode)
     } else {
-      // empty component root.
+      // empty component root. // 空根组件
+      // 跳过除ref以外的所有与元素相关的模块 （修复issues）
       // skip all element-related modules except for ref (#3455)
       registerRef(vnode)
       // make sure to invoke the insert hook
+      // 确保插入调用的钩子
       insertedVnodeQueue.push(vnode)
     }
   }
@@ -253,13 +282,18 @@ export function createPatchFunction (backend) {
     // does not trigger because the inner node's created hooks are not called
     // again. It's not ideal to involve module-specific logic in here but
     // there doesn't seem to be a better way to do it.
+    // 具有内部转换的重新激活组件不会触发，因为内部节点创建的钩子不会再次调用。
+    // 在这里涉及模块特定逻辑并不理想，但似乎没有更好的方法。
     let innerNode = vnode
     while (innerNode.componentInstance) {
       innerNode = innerNode.componentInstance._vnode
+      // 如果组件实例的父级 的data和transition存在
       if (isDef(i = innerNode.data) && isDef(i = i.transition)) {
+        // 主动循环调用激活钩子函数
         for (i = 0; i < cbs.activate.length; ++i) {
           cbs.activate[i](emptyNode, innerNode)
         }
+        // push innerNode（递归到的某一个父级） 到 insertedVnodeQueue
         insertedVnodeQueue.push(innerNode)
         break
       }
@@ -269,6 +303,7 @@ export function createPatchFunction (backend) {
     insert(parentElm, vnode.elm, refElm)
   }
 
+  /** 插入真实的dom **/
   function insert (parent, elm, ref) {
     if (isDef(parent)) {
       if (isDef(ref)) {
@@ -294,6 +329,7 @@ export function createPatchFunction (backend) {
     }
   }
 
+  /** 是否可修复的  递归查找顶级_vnode 的 tag 判断是否定义 **/
   function isPatchable (vnode) {
     while (vnode.componentInstance) {
       vnode = vnode.componentInstance._vnode
@@ -301,13 +337,18 @@ export function createPatchFunction (backend) {
     return isDef(vnode.tag)
   }
 
+  /** 调用创建钩子
+   * 循环cbs.create 调用 create
+   * **/
   function invokeCreateHooks (vnode, insertedVnodeQueue) {
     for (let i = 0; i < cbs.create.length; ++i) {
       cbs.create[i](emptyNode, vnode)
     }
+    // 变量复用做得好
     i = vnode.data.hook // Reuse variable
-    if (isDef(i)) {
+    if (isDef(i)) { // 调用完cbs 的再 调用 vnode 的create 和push insertedVnodeQueue
       if (isDef(i.create)) i.create(emptyNode, vnode)
+      /** insertedVnodeQueue 作用  ??**/
       if (isDef(i.insert)) insertedVnodeQueue.push(vnode)
     }
   }
@@ -315,12 +356,17 @@ export function createPatchFunction (backend) {
   // set scope id attribute for scoped CSS.
   // this is implemented as a special case to avoid the overhead
   // of going through the normal attribute patching process.
+  // 设置作用域CSS的作用域ID属性。
+  // 这是作为一种特殊情况实现的，以避免通过常规属性修补过程的开销。
+  // 设置style 上的 scope属性
   function setScope (vnode) {
     let i
+    // fnScopeId 存在直接设置
     if (isDef(i = vnode.fnScopeId)) {
       nodeOps.setStyleScope(vnode.elm, i)
     } else {
       let ancestor = vnode
+      // 递归查找设置 scopedSlots
       while (ancestor) {
         if (isDef(i = ancestor.context) && isDef(i = i.$options._scopeId)) {
           nodeOps.setStyleScope(vnode.elm, i)
@@ -329,10 +375,11 @@ export function createPatchFunction (backend) {
       }
     }
     // for slot content they should also get the scopeId from the host instance.
-    if (isDef(i = activeInstance) &&
-      i !== vnode.context &&
-      i !== vnode.fnContext &&
-      isDef(i = i.$options._scopeId)
+    // 对于槽内容，它们还应该从主机实例中获取scopeid。
+    if (isDef(i = activeInstance) && // 活跃的实例
+      i !== vnode.context && // vnode的不是上下文
+      i !== vnode.fnContext && // 不是 vnode的fnContext
+      isDef(i = i.$options._scopeId) // _scopeid没有定义
     ) {
       nodeOps.setStyleScope(vnode.elm, i)
     }
