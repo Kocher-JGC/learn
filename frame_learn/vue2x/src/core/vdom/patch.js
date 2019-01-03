@@ -161,9 +161,11 @@ export function createPatchFunction (backend) {
       return
     }
 
+    // 存储数据、children、tag
     const data = vnode.data
     const children = vnode.children
     const tag = vnode.tag
+    // 有tag 开发环境检验该组件是否注册
     if (isDef(tag)) {
       if (process.env.NODE_ENV !== 'production') {
         if (data && data.pre) {
@@ -180,16 +182,21 @@ export function createPatchFunction (backend) {
       }
 
       vnode.elm = vnode.ns
-        ? nodeOps.createElementNS(vnode.ns, tag)
-        : nodeOps.createElement(tag, vnode)
-      setScope(vnode)
+        ? nodeOps.createElementNS(vnode.ns, tag) // 创建NS有什么用兼容什么
+        : nodeOps.createElement(tag, vnode) // 创建 真实的DOM（包含自定义标签的DOM）
+      setScope(vnode) // 设置attr scope
 
       /* istanbul ignore if */
+      // createChildren 会递归调用createElm
       if (__WEEX__) {
-        // in Weex, the default insertion order is parent-first.
+        // in Weex, the default inserti on order is parent-first.
         // List items can be optimized to use children-first insertion
         // with append="tree".
+        // 在weex中，默认插入顺序是parent first。
+        // 使用append =“tree”可以优化列表项以使用子项首次插入。
         const appendAsTree = isDef(data) && isTrue(data.appendAsTree)
+        // 根据 appendAsTree 先 createChildren还是后创建 // 主要决定顺序
+        // 先调用钩子和插入后创建
         if (!appendAsTree) {
           if (isDef(data)) {
             invokeCreateHooks(vnode, insertedVnodeQueue)
@@ -197,6 +204,7 @@ export function createPatchFunction (backend) {
           insert(parentElm, vnode.elm, refElm)
         }
         createChildren(vnode, children, insertedVnodeQueue)
+        // 先创建后调用钩子和插入
         if (appendAsTree) {
           if (isDef(data)) {
             invokeCreateHooks(vnode, insertedVnodeQueue)
@@ -204,6 +212,7 @@ export function createPatchFunction (backend) {
           insert(parentElm, vnode.elm, refElm)
         }
       } else {
+        // 先创建后调用钩子和插入
         createChildren(vnode, children, insertedVnodeQueue)
         if (isDef(data)) {
           invokeCreateHooks(vnode, insertedVnodeQueue)
@@ -211,6 +220,7 @@ export function createPatchFunction (backend) {
         insert(parentElm, vnode.elm, refElm)
       }
 
+      // 又减回去
       if (process.env.NODE_ENV !== 'production' && data && data.pre) {
         creatingElmInVPre--
       }
