@@ -54,7 +54,8 @@ export function _createElement (
   children?: any,
   normalizationType?: number
 ): VNode | Array<VNode> {
-  // __ob__ 是否为响应式数据，为什么如果存在就报错 然后返回空vnode
+  // __ob__ 是否为响应式数据
+  /** 为什么如果存在就报错 然后返回空vnode **/
   // data type == any
   if (isDef(data) && isDef((data).__ob__)) {
     process.env.NODE_ENV !== 'production' && warn(
@@ -141,7 +142,7 @@ export function _createElement (
   if (Array.isArray(vnode)) {
     return vnode
   } else if (isDef(vnode)) {
-    if (isDef(ns)) applyNS(vnode, ns)
+    if (isDef(ns)) applyNS(vnode, ns) // ns 是 math 和 svg的
     if (isDef(data)) registerDeepBindings(data) // resolve issues
     return vnode
   } else {
@@ -163,7 +164,7 @@ function applyNS (vnode, ns, force) {
     for (let i = 0, l = vnode.children.length; i < l; i++) {
       const child = vnode.children[i]
       if (isDef(child.tag) && (
-        isUndef(child.ns) || (isTrue(force) && child.tag !== 'svg'))) {
+        isUndef(child.ns) || (isTrue(force) && child.tag !== 'svg'))) { // svg 不需要递归了
         applyNS(child, ns, force)
       }
     }
