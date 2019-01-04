@@ -1,29 +1,34 @@
 /* @flow */
 
+// VirtualDOM 实例的class
 export default class VNode {
-  tag: string | void;
-  data: VNodeData | void;
-  children: ?Array<VNode>;
-  text: string | void;
-  elm: Node | void;
-  ns: string | void;
+  tag: string | void; // 标签
+  data: VNodeData | void; // 数据
+  children: ?Array<VNode>; // 子
+  text: string | void; // 文本节点
+  elm: Node | void; // 真实的DOM
+  ns: string | void; // math和svg的命名空间
+  // 渲染在当前组件作用域 ？？
   context: Component | void; // rendered in this component's scope
-  key: string | number | void;
-  componentOptions: VNodeComponentOptions | void;
-  componentInstance: Component | void; // component instance
-  parent: VNode | void; // component placeholder node
+  key: string | number | void; // 用处？
+  componentOptions: VNodeComponentOptions | void; // 组件的选项
+  componentInstance: Component | void; // component instance 组件实例
+  parent: VNode | void; // component placeholder node 组件的占位符节点 ？（为什么不是父亲）
 
-  // strictly internal
-  raw: boolean; // contains raw HTML? (server only)
-  isStatic: boolean; // hoisted static node
+  // strictly internal 内部的
+  raw: boolean; // contains raw HTML? (server only) 服务端渲染，是否为html容器
+  isStatic: boolean; // hoisted static node 静态节点
+  // 输入转换检查所必需的 是否根插入   （应该和过渡有关系）
   isRootInsert: boolean; // necessary for enter transition check
-  isComment: boolean; // empty comment placeholder?
-  isCloned: boolean; // is a cloned node?
-  isOnce: boolean; // is a v-once node?
+  isComment: boolean; // empty comment placeholder? // 空注释占位符 （是否注释节点）
+  isCloned: boolean; // is a cloned node? // 是否克隆节点调用cloneVNode时候为true
+  isOnce: boolean; // is a v-once node? // 是否只渲染一次
+  // 异步组件的构造函数
   asyncFactory: Function | void; // async component factory function
   asyncMeta: Object | void;
-  isAsyncPlaceholder: boolean;
+  isAsyncPlaceholder: boolean; // 异步占位符
   ssrContext: Object | void;
+  // 功能节点的虚拟上下文
   fnContext: Component | void; // real context vm for functional nodes
   fnOptions: ?ComponentOptions; // for SSR caching
   fnScopeId: ?string; // functional scope id support
@@ -52,7 +57,7 @@ export default class VNode {
     this.componentOptions = componentOptions
     this.componentInstance = undefined
     this.parent = undefined
-    this.raw = false
+    this.raw = falsediaoy
     this.isStatic = false
     this.isRootInsert = true
     this.isComment = false
@@ -63,13 +68,14 @@ export default class VNode {
     this.isAsyncPlaceholder = false
   }
 
-  // DEPRECATED: alias for componentInstance for backwards compat.
+  // DEPRECATED: alias for componentInstance for backwards compat. // 不赞成的：组件实例的别名，用于向后兼容
   /* istanbul ignore next */
   get child (): Component | void {
     return this.componentInstance
   }
 }
 
+// 空的注释节点
 export const createEmptyVNode = (text: string = '') => {
   const node = new VNode()
   node.text = text
@@ -77,6 +83,7 @@ export const createEmptyVNode = (text: string = '') => {
   return node
 }
 
+// 文本节点
 export function createTextVNode (val: string | number) {
   return new VNode(undefined, undefined, undefined, String(val))
 }
@@ -85,6 +92,9 @@ export function createTextVNode (val: string | number) {
 // used for static nodes and slot nodes because they may be reused across
 // multiple renders, cloning them avoids errors when DOM manipulations rely
 // on their elm reference.
+/** 优化的浅克隆用于静态节点和槽节点，
+ * 因为它们可以跨多个渲染重用，
+ * 克隆它们可以避免在DOM操作依赖于ELM引用时出错。**/
 export function cloneVNode (vnode: VNode): VNode {
   const cloned = new VNode(
     vnode.tag,
