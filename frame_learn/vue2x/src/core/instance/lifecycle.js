@@ -239,11 +239,12 @@ export function updateChildComponent (
 
   // determine whether component has slot children
   // we need to do this before overwriting $options._renderChildren
-  const hasChildren = !!(
-    renderChildren ||               // has new static slots
-    vm.$options._renderChildren ||  // has old static slots
-    parentVnode.data.scopedSlots || // has new scoped slots
-    vm.$scopedSlots !== emptyObject // has old scoped slots
+  // 确定组件是否有槽子项，我们需要在覆盖$options之前执行此操作。
+  const hasChildren = !!( // 只要含有就是有children （更新作用域插槽）
+    renderChildren ||               // has new static slots 新的静态插槽
+    vm.$options._renderChildren ||  // has old static slots 旧的静态插槽
+    parentVnode.data.scopedSlots || // has new scoped slots 新的作用域插槽
+    vm.$scopedSlots !== emptyObject // has old scoped slots 旧的作用域插槽
   )
 
   vm.$options._parentVnode = parentVnode
@@ -292,6 +293,7 @@ export function updateChildComponent (
   }
 }
 
+// 向上寻找，找到活跃组件找到true，找不到fals
 function isInInactiveTree (vm) {
   while (vm && (vm = vm.$parent)) {
     if (vm._inactive) return true
@@ -300,6 +302,7 @@ function isInInactiveTree (vm) {
 }
 
 export function activateChildComponent (vm: Component, direct?: boolean) {
+  // 直接激活或者在激活状态
   if (direct) {
     vm._directInactive = false
     if (isInInactiveTree(vm)) {
@@ -308,8 +311,9 @@ export function activateChildComponent (vm: Component, direct?: boolean) {
   } else if (vm._directInactive) {
     return
   }
+  // 递归查找 （先递归再调用activated钩子的）
   if (vm._inactive || vm._inactive === null) {
-    vm._inactive = false
+    vm._inactive = false // 激活状态标记为false（动态组件的）
     for (let i = 0; i < vm.$children.length; i++) {
       activateChildComponent(vm.$children[i])
     }

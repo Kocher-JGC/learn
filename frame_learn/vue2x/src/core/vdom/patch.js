@@ -14,6 +14,7 @@
  * 注意：
  * 1、有时候先调用cbs的再调用vnode的，有时候反过来。注意逻辑
  * 2、一个i贯彻全函数
+ * 3、哪个变量啥的是没有的
  */
 
 import VNode, { cloneVNode } from './vnode'
