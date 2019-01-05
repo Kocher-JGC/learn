@@ -151,6 +151,14 @@ export function cached<F: Function> (fn: F): F {
   }: any)
 }
 
+export function cached (fn) {
+  const cache = Object.create(null)
+  return str => {
+    const hit = cache[str]
+    return hit || (cache[str] = fn(str))
+  }
+}
+
 /**
  * Camelize a hyphen-delimited string.
  */
@@ -167,7 +175,7 @@ export const capitalize = cached((str: string): string => {
 })
 
 /**
- * Hyphenate a camelCase string.
+ * Hyphenate a camelCase string. 驼峰名 转 - 命名
  */
 const hyphenateRE = /\B([A-Z])/g
 export const hyphenate = cached((str: string): string => {
@@ -180,11 +188,16 @@ export const hyphenate = cached((str: string): string => {
  * now more performant in most browsers, but removing it would be breaking for
  * code that was able to run in PhantomJS 1.x, so this must be kept for
  * backwards compatibility.
+ * 简单绑定不支持它的环境的polyfill…例如 PhantomJS 1.x.
+ * 从技术上讲，我们不再需要这个了，因为原生绑定现在在大多数浏览器中更具性能，
+ * 但是删除它将破坏能够在phantomjs 1.x中运行的代码，
+ * 因此必须保持这个特性以实现向后兼容性。
  */
 
-/* istanbul ignore next */
+/* istanbul ignore next  模拟bind方法 */
 function polyfillBind (fn: Function, ctx: Object): Function {
   function boundFn (a) {
+    /** 为何要这样做， 直接apply和call不好点么？？ **/
     const l = arguments.length
     return l
       ? l > 1
@@ -193,10 +206,11 @@ function polyfillBind (fn: Function, ctx: Object): Function {
       : fn.call(ctx)
   }
 
-  boundFn._length = fn.length
+  boundFn._length = fn.length // 是不是修正eventListeners的长度？
   return boundFn
 }
 
+/** 原生支持bind **/
 function nativeBind (fn: Function, ctx: Object): Function {
   return fn.bind(ctx)
 }

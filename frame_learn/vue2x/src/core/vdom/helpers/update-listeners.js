@@ -50,10 +50,10 @@ export function updateListeners (
   vm: Component
 ) {
   let name, def, cur, old, event
-  for (name in on) {
+  for (name in on) { // 枚举需要绑定的事件
     def = cur = on[name]
     old = oldOn[name]
-    event = normalizeEvent(name)
+    event = normalizeEvent(name) // 对&、~、！进行处理
     /* istanbul ignore if */
     if (__WEEX__ && isPlainObject(def)) {
       cur = def.handler
@@ -65,15 +65,18 @@ export function updateListeners (
         vm
       )
     } else if (isUndef(old)) {
+      // 如果old事件没有 ==> 添加事件（cur\cur.fns）
       if (isUndef(cur.fns)) {
         cur = on[name] = createFnInvoker(cur)
       }
+      // 事件名 、 事件 、 是否单次事件
       add(event.name, cur, event.once, event.capture, event.passive, event.params)
-    } else if (cur !== old) {
+    } else if (cur !== old) { // 有old且不一样 更新（注意更新是更新old.fns）
       old.fns = cur
       on[name] = old
     }
   }
+  // 遍历一次oldOn 映射 on 如果没有则移除
   for (name in oldOn) {
     if (isUndef(on[name])) {
       event = normalizeEvent(name)
