@@ -23,6 +23,7 @@ export function initEvents (vm: Component) {
 
 let target: any
 
+/** 调用once或on绑定事件 **/
 function add (event, fn, once) {
   if (once) {
     target.$once(event, fn)
@@ -31,16 +32,19 @@ function add (event, fn, once) {
   }
 }
 
+// off 移除
 function remove (event, fn) {
   target.$off(event, fn)
 }
 
+/** 就是调用updateListeners但为什么要先储存vm再删了？？ **/
 export function updateComponentListeners (
   vm: Component,
   listeners: Object,
   oldListeners: ?Object
 ) {
   target = vm
+  /** 对比新旧事件 进行添加删除、更新到旧事件上 **/
   updateListeners(listeners, oldListeners || {}, add, remove, vm)
   target = undefined
 }
@@ -55,11 +59,11 @@ export function eventsMixin (Vue: Class<Component>) {
         this.$on(event[i], fn)
       }
     } else {
-      // 向当前实例push事件
+      // 向当前实例的_events  push事件
       (vm._events[event] || (vm._events[event] = [])).push(fn)
       // optimize hook:event cost by using a boolean flag marked at registration
       // instead of a hash lookup
-      // 注册时候标记事件减少开销（？？）
+      // 注册时候标记事件减少开销（？**？）
       if (hookRE.test(event)) {
         vm._hasHookEvent = true
       }
@@ -67,9 +71,9 @@ export function eventsMixin (Vue: Class<Component>) {
     return vm
   }
 
+  /** once事件就是为事件包一层自己关闭的函数 ，再调用on **/
   Vue.prototype.$once = function (event: string, fn: Function): Component {
     const vm: Component = this
-    // once事件就是为事件包一层自己关闭的函数 ，再调用on
     function on () {
       vm.$off(event, on)
       fn.apply(vm, arguments)
@@ -139,7 +143,7 @@ export function eventsMixin (Vue: Class<Component>) {
       const args = toArray(arguments, 1)
       for (let i = 0, l = cbs.length; i < l; i++) {
         try {
-          cbs[i].apply(vm, args)
+          cbs[i].apply(vm, args) // 广播事件
         } catch (e) {
           handleError(e, vm, `event handler for "${event}"`)
         }

@@ -43,7 +43,8 @@ export function initMixin (Vue: Class<Component>) {
     }
     /* istanbul ignore else */
     if (process.env.NODE_ENV !== 'production') {
-      initProxy(vm) // 非生产和生产的代理有何用
+      // 非生产和生产的代理有何用
+      initProxy(vm) // vm 或者 new Proxy(vm, handlers)
     } else {
       vm._renderProxy = vm
     }
@@ -80,13 +81,16 @@ export function initMixin (Vue: Class<Component>) {
  *  data，listeners，children，tag，
  *  render、staticRenderFns等
 **/
+// 初始化内部组件
 export function initInternalComponent (vm: Component, options: InternalComponentOptions) {
   const opts = vm.$options = Object.create(vm.constructor.options)
-  // doing this because it's faster than dynamic enumeration. // 这样做是因为它比动态枚举更快。
-  const parentVnode = options._parentVnode
-  opts.parent = options.parent
+  // doing this because it's faster than dynamic enumeration.
+  // 这样做是因为它比动态枚举更快。
+  const parentVnode = options._parentVnode // 父占位符节点
+  opts.parent = options.parent // 枚举更快？
   opts._parentVnode = parentVnode
 
+  // 父占位符节点的compOpts
   const vnodeComponentOptions = parentVnode.componentOptions
   opts.propsData = vnodeComponentOptions.propsData
   opts._parentListeners = vnodeComponentOptions.listeners
@@ -99,22 +103,28 @@ export function initInternalComponent (vm: Component, options: InternalComponent
   }
 }
 
+/** 解析构造函数的opts **/
 export function resolveConstructorOptions (Ctor: Class<Component>) {
   let options = Ctor.options
   if (Ctor.super) {
+    // 有父级递归先解析父级的
     const superOptions = resolveConstructorOptions(Ctor.super)
     const cachedSuperOptions = Ctor.superOptions
-    if (superOptions !== cachedSuperOptions) {
+    if (superOptions !== cachedSuperOptions) { // 不相等 就是已经更改了父级opts
       // super option changed,
       // need to resolve new options.
+      // 父级选项已更改，需要解析新选项。
       Ctor.superOptions = superOptions
       // check if there are any late-modified/attached options (#4976)
+      // 检查是否有任何后期修改/附加选项
       const modifiedOptions = resolveModifiedOptions(Ctor)
-      // update base extend options
+      // update base extend options 有附加就更新选项
       if (modifiedOptions) {
         extend(Ctor.extendOptions, modifiedOptions)
       }
+      /** 合并继承opts ==> 父级opts **/
       options = Ctor.options = mergeOptions(superOptions, Ctor.extendOptions)
+      /** 理解：修改组件的构造函数？ **/
       if (options.name) {
         options.components[options.name] = Ctor
       }
@@ -130,6 +140,7 @@ function resolveModifiedOptions (Ctor: Class<Component>): ?Object {
   const sealed = Ctor.sealedOptions
   for (const key in latest) {
     if (latest[key] !== sealed[key]) {
+      /** 不一定会进来 这样写是优化还是徒增判断逻辑呢？ 当然如果都没进来那就是undefined**/
       if (!modified) modified = {}
       modified[key] = dedupe(latest[key], extended[key], sealed[key])
     }
@@ -137,15 +148,18 @@ function resolveModifiedOptions (Ctor: Class<Component>): ?Object {
   return modified
 }
 
+/** 确保在合并之间不重复生命周期挂钩 **/
 function dedupe (latest, extended, sealed) {
   // compare latest and sealed to ensure lifecycle hooks won't be duplicated
   // between merges
+  // 比较最新的和确定（密封、未知）的，以确保在合并之间不重复生命周期挂钩
   if (Array.isArray(latest)) {
     const res = []
     sealed = Array.isArray(sealed) ? sealed : [sealed]
     extended = Array.isArray(extended) ? extended : [extended]
     for (let i = 0; i < latest.length; i++) {
       // push original options and not sealed options to exclude duplicated options
+      // 推送原始选项和非密封选项以排除重复的选项
       if (extended.indexOf(latest[i]) >= 0 || sealed.indexOf(latest[i]) < 0) {
         res.push(latest[i])
       }

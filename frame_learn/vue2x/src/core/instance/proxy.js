@@ -5,6 +5,7 @@ import { warn, makeMap, isNative } from '../util/index'
 
 let initProxy
 
+/** 整个代理文件仅在生产环境起作用 **/
 if (process.env.NODE_ENV !== 'production') {
   const allowedGlobals = makeMap(
     'Infinity,undefined,NaN,isFinite,isNaN,' +
@@ -29,6 +30,7 @@ if (process.env.NODE_ENV !== 'production') {
 
   if (hasProxy) {
     const isBuiltInModifier = makeMap('stop,prevent,self,ctrl,shift,alt,meta,exact')
+    // Proxy 代理config.keyCodes
     config.keyCodes = new Proxy(config.keyCodes, {
       set (target, key, value) {
         if (isBuiltInModifier(key)) {
@@ -66,6 +68,7 @@ if (process.env.NODE_ENV !== 'production') {
     if (hasProxy) {
       // determine which proxy handler to use
       const options = vm.$options
+      // 根据条件返回不同的handlers
       const handlers = options.render && options.render._withStripped
         ? getHandler
         : hasHandler

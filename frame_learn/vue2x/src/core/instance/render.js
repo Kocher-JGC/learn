@@ -72,6 +72,7 @@ export function renderMixin (Vue: Class<Component>) {
     const { render, _parentVnode } = vm.$options
 
     // reset _rendered flag on slots for duplicate slot check
+    // 为重复插槽检查重置插槽上呈现的标志
     if (process.env.NODE_ENV !== 'production') {
       for (const key in vm.$slots) {
         // $flow-disable-line // 开发环境记录渲染状态
@@ -79,7 +80,11 @@ export function renderMixin (Vue: Class<Component>) {
       }
     }
 
-    if (_parentVnode) { // 这里定义的作用域插槽有什么用
+    /**
+     *  如果父级占位符节点存在
+     * 问题：定义的作用域插槽有什么用 ？
+    **/
+    if (_parentVnode) {
       vm.$scopedSlots = _parentVnode.data.scopedSlots || emptyObject
     }
 
