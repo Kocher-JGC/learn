@@ -1,7 +1,7 @@
 /* @flow */
 
 /**
- * Check if a string starts with $ or _
+ * Check if a string starts with $ or _ 检查开始的字符是$或者_
  */
 export function isReserved (str: string): boolean {
   const c = (str + '').charCodeAt(0)
@@ -21,7 +21,7 @@ export function def (obj: Object, key: string, val: any, enumerable?: boolean) {
 }
 
 /**
- * Parse simple path.
+ * Parse simple path. 解析路径 （.）
  */
 const bailRE = /[^\w.$]/
 export function parsePath (path: string): any {
