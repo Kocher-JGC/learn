@@ -65,9 +65,11 @@ export function isRegExp (v: any): boolean {
 
 /**
  * Check if val is a valid array index.
+ * 检查val是否是有效的数组索引
  */
 export function isValidArrayIndex (val: any): boolean {
   const n = parseFloat(String(val))
+  // n大于0而且是一个整数而且是一个有限数
   return n >= 0 && Math.floor(n) === n && isFinite(val)
 }
 
@@ -142,6 +144,7 @@ export function hasOwn (obj: Object | Array<*>, key: string): boolean {
 
 /**
  * Create a cached version of a pure function.
+ * 创建纯函数的缓存版本。
  */
 export function cached<F: Function> (fn: F): F {
   const cache = Object.create(null)
@@ -151,16 +154,16 @@ export function cached<F: Function> (fn: F): F {
   }: any)
 }
 
-export function cached (fn) {
-  const cache = Object.create(null)
-  return str => {
-    const hit = cache[str]
-    return hit || (cache[str] = fn(str))
-  }
-}
+// export function cached (fn) {
+//   const cache = Object.create(null)
+//   return str => {
+//     const hit = cache[str]
+//     return hit || (cache[str] = fn(str))
+//   }
+// }
 
 /**
- * Camelize a hyphen-delimited string.
+ * Camelize a hyphen-delimited string. - 转驼峰
  */
 const camelizeRE = /-(\w)/g
 export const camelize = cached((str: string): string => {
