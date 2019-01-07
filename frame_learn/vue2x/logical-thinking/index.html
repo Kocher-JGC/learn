@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="./lib/css/index.css">
+  <script src="./lib/js/vue.js"></script>
+</head>
+<body>
+
+  <div id="app">
+    <span class="color-red">
+      {{ msg }}
+    </span>
+  </div>
+
+  <script>
+    window.onload = function() {
+      new Vue({
+        el: '#app',
+        mounted() {
+          console.log(this.message); // 代理访问的证明
+          console.log(this._data.message);
+        },
+        data() {
+          return {
+            msg: 'hello V'
+          }
+        },
+      });
+    }
+  </script>
+</body>
+</html>
