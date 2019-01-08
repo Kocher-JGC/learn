@@ -1032,6 +1032,7 @@
         return value
       },
       set: function reactiveSetter (newVal) {
+        debugger
         var value = getter ? getter.call(obj) : val;
         /* eslint-disable no-self-compare */
         if (newVal === value || (newVal !== newVal && value !== value)) {
@@ -2839,7 +2840,7 @@
     el,
     hydrating
   ) {
-    debugger
+    // debugger
     vm.$el = el;
     if (!vm.$options.render) {
       vm.$options.render = createEmptyVNode;
@@ -4687,7 +4688,7 @@
         // internal component options needs special treatment.
         initInternalComponent(vm, options);
       } else {
-        debugger
+        // debugger
         vm.$options = mergeOptions(
           resolveConstructorOptions(vm.constructor),
           options || {},
@@ -4716,7 +4717,7 @@
         measure(("vue " + (vm._name) + " init"), startTag, endTag);
       }
 
-      debugger
+      // debugger
       if (vm.$options.el) {
         vm.$mount(vm.$options.el);
       }
