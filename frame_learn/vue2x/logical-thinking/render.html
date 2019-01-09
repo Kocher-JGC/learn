@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="./lib/css/index.css">
+  <script src="./lib/js/vue.js"></script>
+</head>
+<body>
+
+  <div id="app">
+    <span class="color-red">
+      {{ msg }}
+    </span>
+  </div>
+
+  <script>
+    window.onload = function() {
+      new Vue({
+        el: '#app',
+       render(createElement) {
+         console.log(arguments);
+
+         /** 渲染额外DOM/Obj(不是普通类型)是个undefined **/
+        //  const div = document.createElement('div')
+        //  const span = document.createElement('span')
+        //  span.innerHTML = '你猜猜？';
+         return createElement(
+          'div', // tag
+          { // data
+            attrs: {
+              id: "appp",
+              title: '我是标题'
+            }
+          },
+          [this.message+ '. I see , then ' +this.msg,[{
+            test: 'vooo'
+          }]], // children
+          //constant    SIMPLE_NORMALIZE = 1;  ALWAYS_NORMALIZE = 2;,
+          // true 调用的是$createElement (因为是外部来的所有要标准化一下)
+          )
+       },
+        data() {
+          return {
+            msg: 'hello V',
+            message: 'master'
+          }
+        },
+      });
+    }
+  </script>
+</body>
+</html>
