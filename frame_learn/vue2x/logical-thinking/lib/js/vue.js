@@ -2753,6 +2753,7 @@
 
   function lifecycleMixin (Vue) {
     Vue.prototype._update = function (vnode, hydrating) {
+      debugger
       var vm = this;
       var prevEl = vm.$el;
       var prevVnode = vm._vnode;
@@ -4444,6 +4445,7 @@
     normalizationType,
     alwaysNormalize
   ) {
+    debugger
     if (Array.isArray(data) || isPrimitive(data)) {
       normalizationType = children;
       children = data;
@@ -4462,6 +4464,7 @@
     children,
     normalizationType
   ) {
+    debugger
     if (isDef(data) && isDef((data).__ob__)) {
       warn(
         "Avoid using observed data object as vnode data: " + (JSON.stringify(data)) + "\n" +
@@ -4612,6 +4615,7 @@
     };
 
     Vue.prototype._render = function () {
+      debugger
       var vm = this;
       var ref = vm.$options;
       var render = ref.render;
@@ -4627,6 +4631,7 @@
       // render self
       var vnode;
       try {
+        debugger
         vnode = render.call(vm._renderProxy, vm.$createElement);
       } catch (e) {
         handleError(e, vm, "render");
@@ -4667,6 +4672,7 @@
 
   function initMixin (Vue) {
     Vue.prototype._init = function (options) {
+      debugger
       var vm = this;
       // a uid
       vm._uid = uid$3++;
