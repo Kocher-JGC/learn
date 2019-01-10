@@ -1,3 +1,5 @@
+# 因为只对核心的知识进行描述、记录、分享所以只用HTML简单复现并分析源码
+
 1. vm._data
 2. proxy 代理数据 get和set  this[key] 代理访问 vm._data[key] （ES6 proxy）
 3. 合并配置 （代码有变化）
@@ -25,7 +27,7 @@
 
    ）
 
-6. Vue.component 组件注册的研究 
+6. Vue.component 组件注册的研究
 
 7. 异步组件（重点）
 
