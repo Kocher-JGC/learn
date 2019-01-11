@@ -14,6 +14,26 @@
 
   <script>
     window.onload = function() {
+      /**
+        1. 标准化 props、Inject、Directives
+        2. 如果child有继承的属性那么就递归调用mergeOptions进行合并，并赋值到parent
+        3. 如果child有mixins 循环数组调用mergeOptions进行合并，并赋值到parent
+        4. 枚举parent 、child 执行不同的key的函数合并策略，合并到options上并返回：如下
+
+        1. component、directive、filter --> 先在res的原型上创建父的属性、方法  --> 有child浅拷贝无child直接返回。
+        2. provide、data 合并
+          - 调用mergeDataOrFn进行合并
+          - 判断完vm、child、parent后调用mergeData进行合并
+          - 枚举from -->  !hasOwn(to, key) --> 设置响应式 --> 否则如果toVal、fromVal都是Obj -->  递归mergeData合并
+        3. props、methods、inject、computed --> 实际上 就是复制child和parent的属性
+        4. 钩子函数 --> mergeHook --> 子父存在相加  | 父不存在 、子强制为数组返回
+        5. watch
+          - 进行 nativeWatch、child、parent的检测
+          - 检测通过 --> 拷贝parent
+          - 枚举子 -->  有父转数组 --> 再和子合并或者将子转化为数组
+          - 返回结果
+        6. 未知选项 --> defaultStrat --> 有子拿子、无子拿父。
+       *  **/
       let childComp = {
         template: '<div>{{msg}}</div>',
         created() {
@@ -27,6 +47,7 @@
             msg: 'child Render'
           }
         },
+
       }
       Vue.mixin({
         created() {
@@ -40,8 +61,16 @@
       }
       new Vue({
         el: '#app',
+        mixins: [localMixin],
         render: h => h(childComp),
       });
+      /** 执行结果
+       *  global created
+       *  local create
+       *  global created
+       *  hild created
+       *  child mounted
+       *  **/
     }
   </script>
 </body>

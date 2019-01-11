@@ -375,12 +375,14 @@ function normalizeInject (options: Object, vm: ?Component) {
 /**
  * Normalize raw function directives into object format.
  * 将原始函数指令规范化为对象格式。
+ * 疑问：为什么指令钩子有5个需要merge的只有bind和update
  */
 function normalizeDirectives (options: Object) {
   const dirs = options.directives
   if (dirs) {
     for (const key in dirs) {
-      const def = dirs[key] // 规范化指令的每一项 函数转换为有bind和update的obj
+      // 规范化指令的每一项 函数转换为有bind和update的obj
+      const def = dirs[key]
       if (typeof def === 'function') {
         dirs[key] = { bind: def, update: def }
       }
