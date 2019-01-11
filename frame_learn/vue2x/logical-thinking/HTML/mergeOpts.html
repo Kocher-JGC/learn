@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="../lib/css/index.css">
+  <script src="../lib/js/vue.js"></script>
+</head>
+<body>
+
+  <div id="app"></div>
+
+  <script>
+    window.onload = function() {
+      let childComp = {
+        template: '<div>{{msg}}</div>',
+        created() {
+          console.log('child created');
+        },
+        mounted() {
+          console.log('child mounted');
+        },
+        data() {
+          return {
+            msg: 'child Render'
+          }
+        },
+      }
+      Vue.mixin({
+        created() {
+          console.log('global created');
+        }
+      });
+      const localMixin = {
+        created() {
+          console.log('local created');
+        }
+      }
+      new Vue({
+        el: '#app',
+        render: h => h(childComp),
+      });
+    }
+  </script>
+</body>
+</html>
