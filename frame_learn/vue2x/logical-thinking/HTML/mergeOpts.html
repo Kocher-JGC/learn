@@ -34,43 +34,129 @@
           - 返回结果
         6. 未知选项 --> defaultStrat --> 有子拿子、无子拿父。
        *  **/
-      let childComp = {
-        template: '<div>{{msg}}</div>',
-        created() {
-          console.log('child created');
-        },
-        mounted() {
-          console.log('child mounted');
-        },
-        data() {
-          return {
-            msg: 'child Render'
-          }
-        },
 
-      }
-      Vue.mixin({
-        created() {
-          console.log('global created');
-        }
-      });
+      /* 可能写得有点复杂亲请细细阅读
+      * 运行流程的理解
+      * 1、首次渲染触发 child 的一个demo的指令
+      * 2、1秒后触发parent.method.consoleHe 但由于sayHe是provide属性（类似angular的依赖注入）
+      *    并不会触发watch（注入的属性不可观察）和视图的渲染
+      * 3、3秒后触发 this.age++; age属性改变了触发child和children的更新和age[props]的重新验证
+      *   watch.age检测到变化处罚watch
+      *   触发指令demo
+      *   触发watch
+      *   children updated（调用createElm渲染是子到父的【递归】）
+      *   child updated
+      */
       const localMixin = {
         created() {
           console.log('local created');
         }
       }
-      new Vue({
+      const children = {
+        name: 'children',
+        props: {
+          // 检测类型
+          height: Number,
+          // 检测类型 + 其他验证
+          age: {
+            type: Number,
+            default: 0,
+            required: true,
+            validator: function (value) {
+              return value >= 0 // 有验证规则，虽然报错数据也能传输、但会报错
+            }
+          }
+        },
+        watch: {
+          age: function (val, oldVal) {
+            console.log('我： %s 岁, 长大到了 %s岁,验证通过不报错了~！', oldVal, val);
+          },
+        },
+        updated() {
+          console.log('children updated');
+        },
+        template: `
+        <div>
+          <p>我是子子组件</p>
+          来自子组件的数据：age = {{ age }} , height = {{ height }}
+        </div>
+        `
+      }
+      const child = {
+        name: 'child',
+        directives: {
+          demo:  function (el, binding) {
+            console.log(binding.value.color) // => "white"
+            console.log(binding.value.text)  // => "hello!"
+          }
+        },
+        data() {
+          return {
+            // 有类型检查不用bind或者不用:进行绑定传过去默认为字符串
+            height: 222,
+            age: -1, // 让数据报错
+          }
+        },
+        inject: ['sayHe'],
+        props: [ 'emitMsg' ], //　不进行类型检查所有都收 //JSON直接渲染了
+        mixins: [ localMixin ],
+        mounted() {
+          setTimeout(() => {
+            console.log('3秒了长大了~!');
+            this.age++;
+          },3000)
+        },
+        updated() {
+          console.log('child updated');
+        },
+        template: `
+        <div  v-demo="{ color: 'white', text: 'hello!' }">
+          <p>{{ sayHe }}</p>
+          <p>我是子组件  <span class="color-red">{{ emitMsg }}</span></p>
+          <children :age="age" :height="222" />
+        </div>
+        `,
+        components: { children }
+      }
+      const vm = new Vue({
         el: '#app',
-        mixins: [localMixin],
-        render: h => h(childComp),
+        data() {
+          return {
+            msg: {　sendMsg:'我是来自父组件数据'}
+          }
+        },
+        updated() {
+          console.log('parent updated');
+        },
+        components: { // 局部注册
+          child
+        },
+        provide: {
+          sayHe: 'He ~'
+        },
+        methods: {
+          consoleHe: function() {
+            this.sayHe = '我改变了provide.sayHe 的数据但是数据不会响应,所以watch也不会执行。';
+          }
+        },
+        watch: {
+          sayHe: function() { // 不会出发的
+            console.log('sayHe改变了: %s',this.sayHe);
+          }
+        },
+        mounted() {
+          setTimeout(() => {
+            console.log('1秒开始改变~!');
+            this.consoleHe()
+          },1000)
+        },
+        template: `
+        <div>
+          我是父级
+          <child :emit-msg="msg" />
+        </div>
+        `,
       });
-      /** 执行结果
-       *  global created
-       *  local create
-       *  global created
-       *  hild created
-       *  child mounted
-       *  **/
     }
   </script>
 </body>
