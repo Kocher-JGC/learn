@@ -54,11 +54,11 @@ export function initMixin (Vue: Class<Component>) {
     initEvents(vm) // 初始化事件中心 // 初始化事件中心实际复制父组件事件
     initRender(vm) // 初始化渲染
     callHook(vm, 'beforeCreate')
-    // 解决注入问题？
+    // 2.2.0+ 新增 初始化注入（注入父组件的数据到自身）
     initInjections(vm) // resolve injections before data/props
     // 初始化 data、props、computed、watcher 等等。
     initState(vm)
-    // 解决后提供的数据/道具？？ // 难道是针对函数形式的么？
+    // 2.2.0+ 新增 初始化供应商（为子组件提供不响应的数据）
     initProvide(vm) // resolve provide after data/props
     callHook(vm, 'created')
 
