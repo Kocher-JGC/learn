@@ -35,7 +35,7 @@
         6. 未知选项 --> defaultStrat --> 有子拿子、无子拿父。
        *  **/
 
-      /* 可能写得有点复杂亲请细细阅读
+      /* 可能写得有点复杂亲,请细细阅读
       * 运行流程的理解
       * 1、首次渲染触发 child 的一个demo的指令
       * 2、1秒后触发parent.method.consoleHe 但由于sayHe是provide属性（类似angular的依赖注入）
@@ -140,7 +140,7 @@
           }
         },
         watch: {
-          sayHe: function() { // 不会出发的
+          sayHe: function() { // 不会触发的
             console.log('sayHe改变了: %s',this.sayHe);
           }
         },

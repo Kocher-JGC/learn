@@ -9,6 +9,7 @@ import {
   formatComponentName
 } from 'core/util/index'
 
+/* 解析/提取Props **/
 export function extractPropsFromVNodeData (
   data: VNodeData,
   Ctor: Class<Component>,
@@ -17,6 +18,7 @@ export function extractPropsFromVNodeData (
   // we are only extracting raw values here.
   // validation and default values are handled in the child
   // component itself.
+  // 这里我们只提取原始值。验证和默认值在子组件本身中处理。
   const propOptions = Ctor.options.props
   if (isUndef(propOptions)) {
     return
@@ -24,6 +26,7 @@ export function extractPropsFromVNodeData (
   const res = {}
   const { attrs, props } = data
   if (isDef(attrs) || isDef(props)) {
+    // 标准化key并调用checkProp对props进行提取
     for (const key in propOptions) {
       const altKey = hyphenate(key)
       if (process.env.NODE_ENV !== 'production') {
@@ -50,12 +53,13 @@ export function extractPropsFromVNodeData (
 }
 
 function checkProp (
-  res: Object,
-  hash: ?Object,
-  key: string,
-  altKey: string,
-  preserve: boolean
+  res: Object, // 返回值
+  hash: ?Object, // 需要处理的值
+  key: string, // 原先的key
+  altKey: string, // 处理后的key
+  preserve: boolean // 是否保存
 ): boolean {
+  // 对应正确的key获取属性以及删除或者保留该值
   if (isDef(hash)) {
     if (hasOwn(hash, key)) {
       res[key] = hash[key]
