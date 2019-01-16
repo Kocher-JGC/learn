@@ -16,19 +16,19 @@
     window.onload = function() {
       Vue.component('app', { // 全局注册
         template:
-          `<div id="newApp" style="padding:30px;">全局组件</div>`,
+          `<div id="newApp" style="padding:30px;">global component</div>`,
       })
       Vue.component('async-comp', function (resolve, reject) {
         setTimeout(function () {
           // 将组件定义对象(component definition)传递给 resolve 回调函数
           resolve({
-            template: '<div>I am async!</div>'
+            template: '<div>I am global async component!</div>'
           })
         }, 1000)
       })
       const child = {
         name: 'child',
-        template: `<div><p>我是子组件</p></div>`
+        template: `<div><p>child component</p></div>`
       }
       const vm = new Vue({
         el: '#app',
@@ -36,7 +36,7 @@
           child
         },
         template: `<div>
-          我是父级
+          I am parent!!
           <child></child>
           <app></app>
           <async-comp></async-comp>

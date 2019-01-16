@@ -91,7 +91,7 @@ function flushSchedulerQueue () {
 
   // call component updated and activated hooks
   // 调用组件更新并激活挂钩
-  callActivatedHooks(activatedQueue)
+  callActivatedHooks(activatedQueue) // keep-alive 使用的
   callUpdatedHooks(updatedQueue)
 
   // devtool hook
