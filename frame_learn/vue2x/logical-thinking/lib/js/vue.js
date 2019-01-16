@@ -4445,7 +4445,7 @@
     normalizationType,
     alwaysNormalize
   ) {
-    debugger
+    // debugger
     if (Array.isArray(data) || isPrimitive(data)) {
       normalizationType = children;
       children = data;
@@ -4631,7 +4631,7 @@
       // render self
       var vnode;
       try {
-        debugger
+        // debugger
         vnode = render.call(vm._renderProxy, vm.$createElement);
       } catch (e) {
         handleError(e, vm, "render");
@@ -4866,6 +4866,7 @@
      * Class inheritance
      */
     Vue.extend = function (extendOptions) {
+      debugger
       extendOptions = extendOptions || {};
       var Super = this;
       var SuperId = Super.cid;
