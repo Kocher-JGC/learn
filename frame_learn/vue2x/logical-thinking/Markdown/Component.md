@@ -1,3 +1,14 @@
+> 除了加深整体流程的理解外重点理解
+>
+> vdom文件夹里面的js
+>
+> 1. vnode、patch、create-component、create-element、create-functional-component （几个重要文件需要好好理解）--> 其中包含
+>    - class VNode 如何表示各种类型的vnode[各种不同的Virtual DOM]（如：componentVNode、普通的VNode等等）
+>    - _createElement  （$mount最真实的调用）
+>    - createComponent  （创建组件VNode的函数）
+>    - createElm （递归创建真实的DOM） （小心被绕晕哦）
+> 2. 你可能还需要理解helpers里面的各种工具方法 如 createAsyncPlaceholder 如何解析异步、高级异步组件
+
 # Vue.component 注册全局组件
 
 1. validateComponentName(id) --> 开发环境下验证component的名字
@@ -25,9 +36,9 @@
 1. 跳过mergeOptions
 2. 跳过init （lifecycle、events、render、injections、state、provide）
 3. $mount --> 跳过编译（compileToFunctions） --> mountComponent() -->
-4. 定义 updateComponent --> new Watcher() -->  watcher.get() 
+4. 定义 updateComponent --> new Watcher() -->  watcher.get()
 
-##   watcher.get() 
+##   watcher.get()
 
 1. pushTarget(this) --> 把当前watcher push进targetStack数组 --> 改变静态变量（Dep.target = _target）
 
@@ -50,19 +61,19 @@
    - resolveConstructorOptions（）--> 解析构造函数选项的依赖关系 --> 赋值listeners、on、slot、--> installComponentHooks() --> 安装组件钩子['init','prepatch','insert'.'destroy']
    - new Vnode() --> 生成**组件vnode**并返回vnode --> 一直返回至 _c
 3. _v(" ")  --> createTextVNode() --> **创建一个文本VNode**
-4. \_c('app') -->_createElement()--> createComponent(Ctor[先前生成的组件的构造函数]，data，vm，children[undefined],tag:['app']) 
-   - (因为本身就是一个构造函数所以不需要extend的逻辑) --> 此构造函数在一开始 Vue.component（'app'）时候就生成了	
+4. \_c('app') -->_createElement()--> createComponent(Ctor[先前生成的组件的构造函数]，data，vm，children[undefined],tag:['app'])
+   - (因为本身就是一个构造函数所以不需要extend的逻辑) --> 此构造函数在一开始 Vue.component（'app'）时候就生成了
    - 其他步骤基本同上跳过
-5. \_c('async-comp') -->_createElement()--> createComponent(Ctor[传入的func]，data，vm，children[undefined],tag:['async-comp']) 
+5. \_c('async-comp') -->_createElement()--> createComponent(Ctor[传入的func]，data，vm，children[undefined],tag:['async-comp'])
    - 来到了isUndef(ctor.id)的逻辑  --> resolveAsyncComponent(手动传入的fn，Vue ， vm)
      - 组装一些数据【contexts、forceRender、resolve、reject】函数
      - res = factory(resolve,reject) 调用传入的函数、并传入组装的对象
      - factory无loadling和resolved返回undefined
    - **创建一个异步的占位符节点并且返回vnode** --> 一直返回到最上级 _c
 
-### _c 中的children的vnode生成完毕开始最后的\_c的调用 
+### _c 中的children的vnode生成完毕开始最后的\_c的调用
 
-1. --> _createElement(vm,tag:['div'],data:[undefined],children:[之前生产的vnode数组],normalizationType:[1]) -->  ** 
+1. --> _createElement(vm,tag:['div'],data:[undefined],children:[之前生产的vnode数组],normalizationType:[1]) -->  **
 2. 最后一个参数为1调用normalizeChildren --> 递归铺平children为一级数组
 3. 该tag为div是浏览器自带的标签 --> 创建了一个**标签vnode**
 4. 然后又一直返回 到最上级调用 --> _update
@@ -75,7 +86,7 @@
 
 1. 第一个是一个普通的div-->直接跳到createChildren（vnode，children：【之前生成的而且铺平的vnode数组】，insertedVnodeQueue：[]）
 2. checkDuplicateKeys --> 检查和复制key
-3. 循环children调用createElm --> 
+3. 循环children调用createElm -->
    1. 第一个是text直接调用createTextNode创建text节点 --> 并插入到父级中（前面创建的div）
    2. 第二个是child的组件
       - 来到createComponent --> 检查是否已经init的组件而且是有keepAlive
@@ -89,7 +100,7 @@
       - **还原activeInstance**（在这里你不能忽略他）
       - 设置 vm.$el.__vue\_\_ = vm
       - *函数调用完生成好了DOM一直往上返回来到组件init*
-      - initComponent --> 
+      - initComponent -->
         1. vnode.elm = vnode.componentInstance.$el(赋值DOM)
         2. isPatchable-->递归查找顶级实例是否存在 --> 存在 -->invokeCreateHooks()
            - invokeCreateHooks --> 循环调用收集的cbs.create的函数【update[attrs/class/DOMListener/DOMProps/Style/Direvtives]、_enter/create】
@@ -109,17 +120,17 @@
 
 ### 一秒后来到setTimeout逻辑（ _c('async-comp') ------> res = factory(resolve,reject) 逻辑被调用的地方）  （异步组件的一些解析）
 
-1. 从setTimeout出发 -->  调用了回调的第一个参数的方法（resolve）、而且传入了一个{template} --> once内部调用 --> ensureCtor (comp , Vue) --> 
-   - comp是一个对象调用Vue.extend(comp) 生成组件 --> 返回一个普通组件的构造函数 
-2. 拿到构造函数赋值给 factory.resolved 
+1. 从setTimeout出发 -->  调用了回调的第一个参数的方法（resolve）、而且传入了一个{template} --> once内部调用 --> ensureCtor (comp , Vue) -->
+   - comp是一个对象调用Vue.extend(comp) 生成组件 --> 返回一个普通组件的构造函数
+2. 拿到构造函数赋值给 factory.resolved
 3. 因为该异步组件已经被解析过了所以 sync为false --> 调用 forceRender(true)
 4. 循环context（new Vue的实例）--> 调用 $forceUpdate（） 执行强制更新
-5. --> vm._watcher.update() --> queueWatcher(this:[watcher]) --> 
+5. --> vm._watcher.update() --> queueWatcher(this:[watcher]) -->
 6. 把当前watcher（以为异步的父级）push到queue（队列中）--> 并把flushSchedulerQueue函数放在下一个microTimerFunc任务执行（nextTick-->异步执行任务）
 7. flushSchedulerQueue --> (先简单分析一下)
    - （queue）对队列中的watcher进行排序 （保证父组件在前子组件在后）
    - 循环queue。 调用watcher.before() --> (对于组件而言就是调用new Watcher时候传入的 beforeUdate钩子)
-   - --> 调用watcher.run() -->  this.get() --> 
+   - --> 调用watcher.run() -->  this.get() -->
    - pushTarget(this) --> value = this.getter.call(vm, vm); --> _render() --> _update（）
    - 重新 创建vnode 和之前的类同的逻辑
    - 注意不同的是这时候 async-comp 已经在Vue中注册（已经是一个可以实例DOM的构造函数）
@@ -128,13 +139,11 @@
 
 
 
-
-
+### 再分析一下组件的注册
+# 高级异步组件
 
 
 
 
 # 总结
-
-1. 编译后的
 
