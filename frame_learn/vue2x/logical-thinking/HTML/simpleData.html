@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="../lib/css/index.css">
+  <script src="../lib/js/vue.js"></script>
+</head>
+<body>
+
+  <div id="app">
+    {{ msg }}
+    <hr>
+    {{ info }}
+    <hr>
+    <button @click="growUp(1)">点我长大一岁</button>
+    <button @click="addArrayVal()">addArrayVal</button>
+    <button @click="addObjVal()">addObjVal</button>
+  </span>
+  </div>
+
+  <script>
+    window.onload = function() {
+      const vm = new Vue({
+        el: '#app',
+        methods: {
+          growUp(up) {
+            this.info.age+=up;
+          },
+          addObjVal() {
+            // 添加失败（但是数据变化也会变化。原因请看深入响应式检测变化的注意事项）
+            // this.info.newVal = 'addNewValFailed';
+            this.$set(this.info, 'newVal' , 'addNewValSuccess');
+          },
+          addArrayVal() {
+            // this.hobby[3] = 'failedAdd'; // 失败
+            this.$set(this.info.hobby, 4 , 'successAdd');
+          }
+        },
+        data() {
+          return {
+            msg: 'hello V',
+            info: {
+              hobby: [ 'apple', 'banana', 'egg'],
+              name: 'my',
+              age: 1
+            }
+          }
+        },
+      });
+    }
+  </script>
+</body>
+</html>
