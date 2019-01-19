@@ -80,7 +80,7 @@ export function toString (val: any): string {
   return val == null
     ? ''
     : typeof val === 'object'
-      ? JSON.stringify(val, null, 2)
+      ? JSON.stringify(val, null, 2) // 原来还有这个作用。
       : String(val)
 }
 
