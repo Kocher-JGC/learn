@@ -567,7 +567,7 @@ export function createPatchFunction (backend) {
     }
   }
 
-  /** 检查重复键 疑问：检查children的key重复  v-for应用是其中之一 **/
+  /** 检查重复键 检查children的key重复  v-for应用是其中之一 **/
   function checkDuplicateKeys (children) {
     const seenKeys = {}
     for (let i = 0; i < children.length; i++) {
