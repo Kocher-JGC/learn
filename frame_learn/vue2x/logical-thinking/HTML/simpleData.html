@@ -18,6 +18,7 @@
     <button @click="growUp(1)">点我长大一岁</button>
     <button @click="addArrayVal()">addArrayVal</button>
     <button @click="addObjVal()">addObjVal</button>
+    <button @click="errAddVal()">errAddVal</button>
   </span>
   </div>
 
@@ -32,11 +33,20 @@
           addObjVal() {
             // 添加失败（但是数据变化也会变化。原因请看深入响应式检测变化的注意事项）
             // this.info.newVal = 'addNewValFailed';
+            // console.log(this.info);
             this.$set(this.info, 'newVal' , 'addNewValSuccess');
           },
           addArrayVal() {
-            // this.hobby[3] = 'failedAdd'; // 失败
+            // this.info.hobby[3] = 'failedAdd'; // 失败
+            // console.log(this.info);
             this.$set(this.info.hobby, 4 , 'successAdd');
+          },
+          errAddVal() {
+            this.info.addErrVal = 'addErrVal';
+            this.info.age++;
+            setTimeout(()=>{ // 不合理但是为了演示理解错误
+              this.info.addErrVal = 'error';
+            },2000)
           }
         },
         data() {
