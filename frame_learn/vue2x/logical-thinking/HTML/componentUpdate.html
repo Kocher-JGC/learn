@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="../lib/css/index.css">
+  <script src="../lib/js/vue.js"></script>
+</head>
+<body>
+
+  <div id="app"></div>
+
+  <script>
+    window.onload = function() {
+      const child = {
+        name: 'child',
+        props: ['sendMsg'],
+        data() {
+          return {
+            items: [
+              {id: 0, val: 'A'},
+              {id: 1, val: 'B'},
+              {id: 2, val: 'C'},
+              {id: 3, val: 'D'}
+            ]
+          }
+        },
+        methods: {
+          changeArr() {
+            this.items.reverse().push({id: 4, val: 'E'})
+          }
+        },
+        template: `
+        <div>
+          <div v-if="sendMsg">收到信息。。。</div>
+          <div v-else>
+            <p>收不到信息先看着。。。</p>
+            <ul>
+              <li v-for="item in items" :key="item.id">{{ item.val }}</li>
+            </ul>
+          </div>
+          <button @click.once="changeArr">changeArr</button>
+        </div>`
+      }
+      const vm = new Vue({
+        el: '#app',
+        components: { // 局部注册
+          child
+        },
+        data() {
+          return {
+            toggleMsg: true
+          }
+        },
+        methods: {
+          changeToggleMsgg() {
+            this.toggleMsg = !this.toggleMsg;
+          }
+        },
+        template: `
+        <div>
+          <child :sendMsg="toggleMsg"></child>
+          <button @click="changeToggleMsgg">changeToggleMsgg</button>
+        </div>`,
+      });
+    }
+  </script>
+</body>
+</html>
