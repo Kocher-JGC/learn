@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="../lib/css/index.css">
+  <script src="../lib/js/vue.js"></script>
+</head>
+<body>
+
+  <div id="app">
+    名字：{{ name }}
+    <hr>
+    信息：{{ info }}
+  </div>
+
+  <script>
+    window.onload = function() {
+      /**
+       * 输出结果
+       * 张 undefined
+       * 四 三
+       * 李 张
+       * 11 11
+       * 11 1
+       ***/
+      const vm = new Vue({
+        el: '#app',
+        data() {
+          return {
+            firstName: '张',
+            lastName: '三',
+            info: {
+              age: 1
+            }
+          }
+        },
+        computed: {
+          name() {
+            return this.firstName + '  ' + this.lastName;
+          }
+        },
+        watch: {
+          firstName: {
+            immediate: true,
+            handler(newValue, oldValue) {
+              console.log(newValue, oldValue);
+            }
+          },
+          lastName:{
+            sync: true,
+            handler(newValue, oldValue) {
+              console.log(newValue, oldValue);
+            }
+          },
+          info: {
+            deep: true,
+            handler(newValue, oldValue) {
+              // 因为info是一个对象，储存是引用关系，所以一旦改变新旧都会一样
+              console.log(newValue.age, oldValue.age);
+            },
+            before() {
+              console.log('beforeCall');
+            }
+          },
+          'info.age'(newValue, oldValue) {
+            console.log(newValue, oldValue);
+          },
+        },
+      });
+      setTimeout(()=>{
+        vm.info.age = 11;
+        vm.firstName = '李';
+        vm.lastName = '四';
+      },2000)
+    }
+  </script>
+</body>
+</html>
