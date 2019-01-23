@@ -175,7 +175,7 @@ export function getData (data: Function, vm: Component): any {
     handleError(e, vm, `data()`)
     return {}
   } finally {
-    popTarget() // 刚才禁用了现在开启？
+    popTarget() // 等函数走完了后开启并且返回刚刚获取的data
   }
 }
 
