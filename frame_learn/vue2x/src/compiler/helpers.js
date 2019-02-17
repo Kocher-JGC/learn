@@ -120,33 +120,38 @@ export function addHandler (
   el.plain = false
 }
 
+/** 获取绑定的值或者静态值 （多重查找）*/
 export function getBindingAttr (
   el: ASTElement,
   name: string,
   getStatic?: boolean
 ): ?string {
-  const dynamicValue =
+  const dynamicValue = // 先获取属性中函数的特定值
     getAndRemoveAttr(el, ':' + name) ||
     getAndRemoveAttr(el, 'v-bind:' + name)
-  if (dynamicValue != null) {
-    return parseFilters(dynamicValue)
-  } else if (getStatic !== false) {
-    const staticValue = getAndRemoveAttr(el, name)
-    if (staticValue != null) {
-      return JSON.stringify(staticValue)
+  if (dynamicValue != null) { // 如果能够获取值那么过滤并返回
+    return parseFilters(dynamicValue) // 这是用来过滤什么？
+  } else if (getStatic !== false) { // 如果获取静态值不为假
+    const staticValue = getAndRemoveAttr(el, name) // 获取静态的值
+    if (staticValue != null) { // 严谨判断值存在（因为值为null是一个obj也是可以转化的）
+      return JSON.stringify(staticValue) // 转化为字符串后返回
     }
   }
 }
 
 // note: this only removes the attr from the Array (attrsList) so that it
 // doesn't get processed by processAttrs.
+// 这只会从数组（attrslist）中删除attr，这样它就不会被processattr处理。
 // By default it does NOT remove it from the map (attrsMap) because the map is
 // needed during codegen.
-export function getAndRemoveAttr (
+// 默认情况下，它不会将其从映射（attrsmap）中删除，因为在codegen期间需要映射。
+export function getAndRemoveAttr ( //（指定名字查找）
   el: ASTElement,
   name: string,
   removeFromMap?: boolean
 ): ?string {
+  // 用于获取制定name的attribute并删除attrsList中的值
+  // 若removeFromMap为true时候attrsMap也会中的值也会被删除
   let val
   if ((val = el.attrsMap[name]) != null) {
     const list = el.attrsList
