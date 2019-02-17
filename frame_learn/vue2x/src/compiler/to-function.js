@@ -8,6 +8,7 @@ type CompiledFunctionResult = {
   staticRenderFns: Array<Function>;
 };
 
+/** 传入编译好的代码用new Function创建可执行的函数 */
 function createFunction (code, errors) {
   try {
     return new Function(code)
@@ -17,6 +18,14 @@ function createFunction (code, errors) {
   }
 }
 
+/** 
+ * 1、创建cache局部变量，用于缓存编译的结果
+ * 2、返回CompileToFunctions函数
+ *   该函数主要作用
+ *    1、在非生产环境下检测new Function可用性、以及进行error报错
+ *    2、返回Compiled结果或者是返回缓存结果
+ *    3、调用Compile函数进行编译生成render和 staticRenderFns
+ */
 export function createCompileToFunctionFn (compile: Function): Function {
   const cache = Object.create(null)
 
@@ -25,11 +34,13 @@ export function createCompileToFunctionFn (compile: Function): Function {
     options?: CompilerOptions,
     vm?: Component
   ): CompiledFunctionResult {
+    // 对options进行处理
     options = extend({}, options)
     const warn = options.warn || baseWarn
     delete options.warn
 
     /* istanbul ignore if */
+    // 检测new Function可用性
     if (process.env.NODE_ENV !== 'production') {
       // detect possible CSP restriction
       try {
@@ -47,7 +58,7 @@ export function createCompileToFunctionFn (compile: Function): Function {
       }
     }
 
-    // check cache
+    // check cache // 检测缓存是否存在
     const key = options.delimiters
       ? String(options.delimiters) + template
       : template
@@ -55,10 +66,10 @@ export function createCompileToFunctionFn (compile: Function): Function {
       return cache[key]
     }
 
-    // compile
+    // compile // 调用编译函数进行编译
     const compiled = compile(template, options)
 
-    // check compilation errors/tips
+    // check compilation errors/tips // 检测编译的错误
     if (process.env.NODE_ENV !== 'production') {
       if (compiled.errors && compiled.errors.length) {
         warn(
@@ -72,7 +83,7 @@ export function createCompileToFunctionFn (compile: Function): Function {
       }
     }
 
-    // turn code into functions
+    // turn code into functions new Function生成render函数
     const res = {}
     const fnGenErrors = []
     res.render = createFunction(compiled.render, fnGenErrors)
@@ -80,9 +91,10 @@ export function createCompileToFunctionFn (compile: Function): Function {
       return createFunction(code, fnGenErrors)
     })
 
-    // check function generation errors.
+    // check function generation errors.// 检查函数生成错误。
     // this should only happen if there is a bug in the compiler itself.
     // mostly for codegen development use
+    // 只有编译器本身存在错误时，才会发生这种情况。主要用于开发阶段对代码生成的校验
     /* istanbul ignore if */
     if (process.env.NODE_ENV !== 'production') {
       if ((!compiled.errors || !compiled.errors.length) && fnGenErrors.length) {
@@ -94,6 +106,6 @@ export function createCompileToFunctionFn (compile: Function): Function {
       }
     }
 
-    return (cache[key] = res)
+    return (cache[key] = res) // 返回并且缓存
   }
 }

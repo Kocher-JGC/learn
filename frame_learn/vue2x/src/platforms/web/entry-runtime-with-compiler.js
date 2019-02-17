@@ -77,10 +77,10 @@ Vue.prototype.$mount = function (
 
       // 重点研究创建render函数和静态的renderFN
       const { render, staticRenderFns } = compileToFunctions(template, {
-        shouldDecodeNewlines,
-        shouldDecodeNewlinesForHref,
-        delimiters: options.delimiters,
-        comments: options.comments
+        shouldDecodeNewlines, // 解决ie兼容
+        shouldDecodeNewlinesForHref, // 解决chrome  a[href]
+        delimiters: options.delimiters, // 分隔符如["{{", "}}"] --> ['${', '}']
+        comments: options.comments // 注释（布尔值是否保留HTML中的注释）
       }, this)
       options.render = render
       options.staticRenderFns = staticRenderFns
