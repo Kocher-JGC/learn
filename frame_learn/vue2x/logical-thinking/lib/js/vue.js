@@ -2,6 +2,7 @@
  * Vue.js v2.5.18-beta.0
  * (c) 2014-2018 Evan You
  * Released under the MIT License.
+ *
  */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
@@ -10021,7 +10022,7 @@
       return true
     }
     console.log(node.tag,Object.keys(node).every(isStaticKey));
-    
+
     return !!(node.pre || (
       !node.hasBindings && // no dynamic bindings
       !node.if && !node.for && // not v-if or v-for or v-else
