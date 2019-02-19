@@ -1000,7 +1000,7 @@
     customSetter,
     shallow
   ) {
-    debugger
+    // debugger
     var dep = new Dep();
 
     var property = Object.getOwnPropertyDescriptor(obj, key);
@@ -1020,7 +1020,7 @@
       enumerable: true,
       configurable: true,
       get: function reactiveGetter () {
-        debugger
+        // debugger
         var value = getter ? getter.call(obj) : val;
         if (Dep.target) {
           dep.depend();
@@ -1034,7 +1034,7 @@
         return value
       },
       set: function reactiveSetter (newVal) {
-        debugger
+        // debugger
         var value = getter ? getter.call(obj) : val;
         /* eslint-disable no-self-compare */
         if (newVal === value || (newVal !== newVal && value !== value)) {
@@ -4466,7 +4466,7 @@
     children,
     normalizationType
   ) {
-    debugger
+    // debugger
     if (isDef(data) && isDef((data).__ob__)) {
       warn(
         "Avoid using observed data object as vnode data: " + (JSON.stringify(data)) + "\n" +
@@ -4617,7 +4617,7 @@
     };
 
     Vue.prototype._render = function () {
-      debugger
+      // debugger
       var vm = this;
       var ref = vm.$options;
       var render = ref.render;
@@ -10020,6 +10020,8 @@
     if (node.type === 3) { // text
       return true
     }
+    console.log(node.tag,Object.keys(node).every(isStaticKey));
+    
     return !!(node.pre || (
       !node.hasBindings && // no dynamic bindings
       !node.if && !node.for && // not v-if or v-for or v-else
@@ -10942,6 +10944,7 @@
     template,
     options
   ) {
+    debugger
     var ast = parse(template.trim(), options);
     if (options.optimize !== false) {
       optimize(ast, options);
