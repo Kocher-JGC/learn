@@ -114,6 +114,7 @@ export function makeMap (
 
 /**
  * Check if a tag is a built-in tag.
+ * 检查标记是否为内置标记。
  */
 export const isBuiltInTag = makeMap('slot,component', true)
 

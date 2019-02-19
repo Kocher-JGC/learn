@@ -7,6 +7,7 @@ export function baseWarn (msg: string) {
   console.error(`[Vue compiler]: ${msg}`)
 }
 
+/** 提取模块功能 */
 export function pluckModuleFunction<F: Function> (
   modules: ?Array<Object>,
   key: string

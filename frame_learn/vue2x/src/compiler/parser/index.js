@@ -66,35 +66,38 @@ export function parse (
   template: string,
   options: CompilerOptions
 ): ASTElement | void {
+  // 对options的处理
   warn = options.warn || baseWarn
 
   platformIsPreTag = options.isPreTag || no
   platformMustUseProp = options.mustUseProp || no
   platformGetTagNamespace = options.getTagNamespace || no
 
+  // 对选项的模块进行处理（这三个包含平台相关的什么？？）
   transforms = pluckModuleFunction(options.modules, 'transformNode')
   preTransforms = pluckModuleFunction(options.modules, 'preTransformNode')
   postTransforms = pluckModuleFunction(options.modules, 'postTransformNode')
 
-  delimiters = options.delimiters
+  delimiters = options.delimiters // 分隔符
 
   const stack = []
-  const preserveWhitespace = options.preserveWhitespace !== false
+  const preserveWhitespace = options.preserveWhitespace !== false // 是否保留空白字符
   let root
   let currentParent
   let inVPre = false
   let inPre = false
   let warned = false
 
+  // 错误处理的
   function warnOnce (msg) {
     if (!warned) {
       warned = true
       warn(msg)
     }
   }
-
+  // 标签闭合处理的函数
   function closeElement (element) {
-    // check pre state
+    // check pre state // 两个都是检查preTag
     if (element.pre) {
       inVPre = false
     }
@@ -103,34 +106,38 @@ export function parse (
     }
     // apply post-transforms
     for (let i = 0; i < postTransforms.length; i++) {
-      postTransforms[i](element, options)
+      postTransforms[i](element, options) // 调用平台相关的model处理函数对选项模块进行处理
     }
   }
 
+
+  // 解析template模板真正的函数
   parseHTML(template, {
-    warn,
-    expectHTML: options.expectHTML,
-    isUnaryTag: options.isUnaryTag,
-    canBeLeftOpenTag: options.canBeLeftOpenTag,
-    shouldDecodeNewlines: options.shouldDecodeNewlines,
-    shouldDecodeNewlinesForHref: options.shouldDecodeNewlinesForHref,
-    shouldKeepComment: options.comments,
-    start (tag, attrs, unary) {
-      // check namespace.
-      // inherit parent ns if there is one
+    warn, // 错误处理
+    expectHTML: options.expectHTML, // 预期的HTML
+    isUnaryTag: options.isUnaryTag, // 是否是一元标签
+    canBeLeftOpenTag: options.canBeLeftOpenTag, // 能够是左开标签
+    shouldDecodeNewlines: options.shouldDecodeNewlines,// 解决ie兼容
+    shouldDecodeNewlinesForHref: options.shouldDecodeNewlinesForHref, // 解决chrome  a[href]
+    shouldKeepComment: options.comments, // 是否保留注释节点
+    start (tag, attrs, unary) { // 匹配标签开始处理的函数
+      // check namespace. 检查命名空间
+      // inherit parent ns if there is one 继承父级的命名空间
       const ns = (currentParent && currentParent.ns) || platformGetTagNamespace(tag)
 
       // handle IE svg bug
       /* istanbul ignore if */
       if (isIE && ns === 'svg') {
-        attrs = guardIESVGBug(attrs)
+        attrs = guardIESVGBug(attrs) // 处理ie SVG的 bug
       }
 
+      // 创建一个一开始的astElement
       let element: ASTElement = createASTElement(tag, attrs, currentParent)
       if (ns) {
-        element.ns = ns
+        element.ns = ns //设置命名空间
       }
 
+      // 如果是禁止标签（script、style）而且不是服务端渲染，警告和添加forbidden属性
       if (isForbiddenTag(element) && !isServerRendering()) {
         element.forbidden = true
         process.env.NODE_ENV !== 'production' && warn(
@@ -140,11 +147,12 @@ export function parse (
         )
       }
 
-      // apply pre-transforms
+      // apply pre-transforms // 同样调用平台相关的model
       for (let i = 0; i < preTransforms.length; i++) {
         element = preTransforms[i](element, options) || element
       }
 
+      // 对pre指令或者标签的处理
       if (!inVPre) {
         processPre(element)
         if (element.pre) {
@@ -154,18 +162,19 @@ export function parse (
       if (platformIsPreTag(element.tag)) {
         inPre = true
       }
-      if (inVPre) {
+      if (inVPre) { // pre属性为true的时候直接从attrsList生成attrs
         processRawAttrs(element)
+        // processed（该element是否已经进行过加工）
       } else if (!element.processed) {
-        // structural directives
+        // structural directives 结构指令的处理(v-for、v-if、v-once)
         processFor(element)
         processIf(element)
         processOnce(element)
-        // element-scope stuff
+        // element-scope stuff 最后再处理元素
         processElement(element, options)
       }
 
-      function checkRootConstraints (el) {
+      function checkRootConstraints (el) { // 检查root容器
         if (process.env.NODE_ENV !== 'production') {
           if (el.tag === 'slot' || el.tag === 'template') {
             warnOnce(
@@ -184,16 +193,19 @@ export function parse (
 
       // tree management
       if (!root) {
-        root = element
+        root = element // 第一次，设置根节点
         checkRootConstraints(root)
-      } else if (!stack.length) {
+      } else if (!stack.length) { // 为什么要栈当中无元素(如果是这样应该是根的第一个children)
         // allow root elements with v-if, v-else-if and v-else
+        // 允许根元素带有v-if、v-else-if和v-else
         if (root.if && (element.elseif || element.else)) {
           checkRootConstraints(element)
+          // 看到这里就懂了，就是有2个或以上的根
           addIfCondition(root, {
             exp: element.elseif,
             block: element
           })
+          // 如果不是有if判断的情况那么就是多个根，报错
         } else if (process.env.NODE_ENV !== 'production') {
           warnOnce(
             `Component template should contain exactly one root element. ` +
@@ -202,41 +214,43 @@ export function parse (
           )
         }
       }
+      /** 建立父子关系 */
       if (currentParent && !element.forbidden) {
-        if (element.elseif || element.else) {
+        if (element.elseif || element.else) { // elseif、else处理
           processIfConditions(element, currentParent)
-        } else if (element.slotScope) { // scoped slot
+        } else if (element.slotScope) { // scoped slot 作用域槽
           currentParent.plain = false
           const name = element.slotTarget || '"default"'
           ;(currentParent.scopedSlots || (currentParent.scopedSlots = {}))[name] = element
         } else {
+          // 父子树的建立（AST）
           currentParent.children.push(element)
           element.parent = currentParent
         }
       }
-      if (!unary) {
+      if (!unary) { // 非一元标签
         currentParent = element
-        stack.push(element)
+        stack.push(element) // 形成栈用于后续 end的处理（对元素进行出栈、校验、形成DOM树）
       } else {
-        closeElement(element)
+        closeElement(element) // 一元标签直接闭合（img、br等）
       }
     },
 
-    end () {
-      // remove trailing whitespace
+    end () { // 匹配标签结束处理的函数
+      // remove trailing whitespace 删除尾随空格
       const element = stack[stack.length - 1]
       const lastNode = element.children[element.children.length - 1]
       if (lastNode && lastNode.type === 3 && lastNode.text === ' ' && !inPre) {
         element.children.pop()
       }
-      // pop stack
+      // pop stack //对匹配元素进行出栈，并且closeElement闭合元素
       stack.length -= 1
       currentParent = stack[stack.length - 1]
       closeElement(element)
     },
 
-    chars (text: string) {
-      if (!currentParent) {
+    chars (text: string) { // 处理标签中的文本内容
+      if (!currentParent) { // 如果匹配到text文本没有父级报警告，并返回不编译
         if (process.env.NODE_ENV !== 'production') {
           if (text === template) {
             warnOnce(
@@ -256,22 +270,27 @@ export function parse (
         currentParent.tag === 'textarea' &&
         currentParent.attrsMap.placeholder === text
       ) {
-        return
+        return // 针对ie的textare [placeholder] 的bug进行处理
       }
-      const children = currentParent.children
-      text = inPre || text.trim()
+      /** 真正的对text进行处理 */
+      // 因为text文本属于Children级（父级的下一级），所以要对Children进行操作
+      const children = currentParent.children 
+      text = inPre || text.trim() // 对text文本的处理（这个先处理的有点陌生）
         ? isTextTag(currentParent) ? text : decodeHTMLCached(text)
         // only preserve whitespace if its not right after a starting tag
+        // 仅在开始标记后保留空白(下面空白字符的保留)
         : preserveWhitespace && children.length ? ' ' : ''
-      if (text) {
+      if (text) { // 经过第一次解析还有text
         let res
+        // 解析含有变量的text文本如：（{{ 变量 }}）
         if (!inVPre && text !== ' ' && (res = parseText(text, delimiters))) {
           children.push({
             type: 2,
-            expression: res.expression,
-            tokens: res.tokens,
+            expression: res.expression, // 解析出的表达式
+            tokens: res.tokens, // 解析出的tokens
             text
           })
+        // 普通纯静态文本
         } else if (text !== ' ' || !children.length || children[children.length - 1].text !== ' ') {
           children.push({
             type: 3,
@@ -280,7 +299,8 @@ export function parse (
         }
       }
     },
-    comment (text: string) {
+    comment (text: string) { // 处理注释节点的函数
+      /** 简单的在其父级推入一个文本Children，而这个Children的isComment为true */
       currentParent.children.push({
         type: 3,
         text,
@@ -563,7 +583,7 @@ function processAttrs (el) {
       }
       if (bindRE.test(name)) { // v-bind // 如果是一个bind
         name = name.replace(bindRE, '') // 又重新赋值name
-        value = parseFilters(value) // 过滤值
+        value = parseFilters(value) // 解析filters
         isProp = false // ?
         if (modifiers) { // 存在修饰符（并且处理3个修饰符）
           if (modifiers.prop) { // 被用于绑定 DOM 属性（有什么不同？）。如果标签是一个组件，那么 .prop 将在组件的 $el 上设置属性
