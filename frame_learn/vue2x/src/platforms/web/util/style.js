@@ -2,6 +2,7 @@
 
 import { cached, extend, toObject } from 'shared/util'
 
+/** 解析原本的style返回json格式的style，并此处用了空间换时间的一些缓存 */
 export const parseStyleText = cached(function (cssText) {
   const res = {}
   const listDelimiter = /;(?![^(]*\))/g

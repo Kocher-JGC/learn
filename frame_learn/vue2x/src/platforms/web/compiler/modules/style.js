@@ -8,6 +8,11 @@ import {
   baseWarn
 } from 'compiler/helpers'
 
+/** 从el中的style中获取静态的style属性
+ *  1、获取后判断是否含有插值表达式（因为新版本以及不支持了）
+ *  2、parseStyleText解析style
+ *  3、再获取动态绑定的style属性
+ */
 function transformNode (el: ASTElement, options: CompilerOptions) {
   const warn = options.warn || baseWarn
   const staticStyle = getAndRemoveAttr(el, 'style')

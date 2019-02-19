@@ -7,6 +7,11 @@ import {
   baseWarn
 } from 'compiler/helpers'
 
+/** 从el中的class中获取静态的class属性
+ *  1、获取后判断是否含有插值表达式（因为新版本以及不支持了）
+ *  2、静态class转化为字符串
+ *  3、获取动态绑定的class属性并赋值
+ */
 function transformNode (el: ASTElement, options: CompilerOptions) {
   const warn = options.warn || baseWarn
   const staticClass = getAndRemoveAttr(el, 'class')

@@ -244,12 +244,16 @@ export function parseHTML (html, options) {
     const tagName = match.tagName
     const unarySlash = match.unarySlash
 
-    /** 为什么满足这些条件就要解析闭合标签？（？？） */
+    /** 为什么满足这些条件就要解析闭合标签？（？？） 
+     * HTML规范  http://blog.shaochuancs.com/w3c-html5-content-model/
+    */
     if (expectHTML) {
       // lastTag是p而且是非短语标记
+      // 形如 <p><div></div></p> 这是不符合规范的主动闭合
       if (lastTag === 'p' && isNonPhrasingTag(tagName)) {
         parseEndTag(lastTag)
       }
+      // 形如 <p><p></p></p> 也是不符合规范的主动闭合(产生这些情况的标签canBeLeftOpenTag)
       if (canBeLeftOpenTag(tagName) && lastTag === tagName) {
         parseEndTag(tagName)
       }
@@ -314,7 +318,7 @@ export function parseHTML (html, options) {
       }
     } else {
       // If no tag name is provided, clean shop
-      // 如果没有提供标签名称，清洁工厂
+      // 如果没有提供标签名称，清理修改pos
       pos = 0
     }
 
@@ -341,11 +345,12 @@ export function parseHTML (html, options) {
       // 从堆栈中移除元素
       stack.length = pos
       lastTag = pos && stack[pos - 1].tag
-    } else if (lowerCasedTagName === 'br') { // 一元标签br的特殊处理
+    } else if (lowerCasedTagName === 'br') { // 一元标签br的特殊处理 </br>(不规范)
       if (options.start) {
         options.start(tagName, [], true, start, end)
       }
-    // 为什么这里要特殊处理p呢？？
+    // 为什么这里要特殊处理p呢？？ 
+    // 因为上面的一些不符合规范的写法等形如只剩下 </p> 就手动调用start 生成<p>标签 
     } else if (lowerCasedTagName === 'p') {
       if (options.start) {
         options.start(tagName, [], false, start, end)

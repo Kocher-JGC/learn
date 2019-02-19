@@ -6,7 +6,7 @@ import { makeMap } from 'shared/util'
 // during template compilation
 export const isReservedAttr = makeMap('style,class')
 
-// attributes that should be using props for binding
+// attributes that should be using props for binding 应使用props进行绑定的属性
 const acceptValue = makeMap('input,textarea,option,select,progress')
 export const mustUseProp = (tag: string, type: ?string, attr: string): boolean => {
   return (

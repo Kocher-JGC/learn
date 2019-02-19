@@ -69,9 +69,10 @@ export function parse (
   // 对options的处理
   warn = options.warn || baseWarn
 
-  platformIsPreTag = options.isPreTag || no
-  platformMustUseProp = options.mustUseProp || no
-  platformGetTagNamespace = options.getTagNamespace || no
+  //下面的都是平台相关的
+  platformIsPreTag = options.isPreTag || no // 是否pre标签
+  platformMustUseProp = options.mustUseProp || no // 针对某些标签的某个属性的绑定需要使用prop进行绑定(weex平台为fasle)
+  platformGetTagNamespace = options.getTagNamespace || no // 对svg和math标签的获取
 
   // 对选项的模块进行处理（这三个包含平台相关的什么？？）
   transforms = pluckModuleFunction(options.modules, 'transformNode')
@@ -191,7 +192,7 @@ export function parse (
         }
       }
 
-      // tree management
+      // tree management (树管理)
       if (!root) {
         root = element // 第一次，设置根节点
         checkRootConstraints(root)
@@ -244,7 +245,7 @@ export function parse (
         element.children.pop()
       }
       // pop stack //对匹配元素进行出栈，并且closeElement闭合元素
-      stack.length -= 1
+      stack.length -= 1 // 好方法,比pop快
       currentParent = stack[stack.length - 1]
       closeElement(element)
     },
@@ -446,7 +447,7 @@ function processIf (el) {
   }
 }
 
-/** 有点转不过弯理解一下 */
+/** 有点转不过弯理解一下 (因为if判断体在其上个兄弟级所以要拿prev)*/
 function processIfConditions (el, parent) {
   // 从尾开始找找到第一个同级而且含有if属性的，赋值el.elseif到prev元素上
   const prev = findPrevElement(parent.children)
@@ -476,7 +477,7 @@ function findPrevElement (children: Array<any>): ASTElement | void {
           `will be ignored.`
         )
       }
-      children.pop()
+      children.pop() //在找的时候做优化如果不是DOM就删除
     }
   }
 }
