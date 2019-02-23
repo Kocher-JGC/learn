@@ -117,3 +117,103 @@
 generate结束 --> 注意查看addHandler ,那就理解为什么,可以访问原生event事件的原因
 
 ## 运行
+
+> 同样的还是挑重点和逻辑来讲.
+>
+> 开头忽略\跳过部分:
+>
+> ​	$mount --> mountComonent --> Watcher --> watcher.get() --> updateComponent( --> _createElement() [VNodeCreate] (以及createComponent进行生成组件构造函数)--> _render() \ _ update) --> patch --> createElm --> createChildren --> 渲染子组件 --> 组件是child --> child的createElm
+
+### 根据上述的忽略逻辑,来到了child的createElm 
+
+**特别说明:** 在child组件的createComponent的时候有一段需要注意的代码
+
+```js
+// 拿到了on事件,再把原生事件赋值给on 
+// 而本来的on的事件作为参数传入Vnode的实例
+// 使VNode的componentOptions 多了listeners的选项是原始的on
+// 而nativeOn 则 --> on
+const listeners = data.on
+data.on = data.nativeOn
+... 
+const vnode = new VNode(
+  `vue-component-${Ctor.cid}${name ? `-${name}` : ''}`,
+  data, undefined, undefined, undefined, context,
+  { Ctor, propsData, listeners, tag, children },
+  asyncFactory
+)
+```
+
+1. 因为child是组件所以走进了createComponent里面
+   1. i.data存在而且i.data.hook.init也存在 --> 调用组件init的钩子函数 --> 
+
+   2. 在钩子函数里因为是第一次调用所以else逻辑调用createComponentInstanceForVnode --> createComponent --> 调用组件的构造函数 --> 组件构造函数执行vue._init -->
+      - 组件进行mergeOpts --> 
+
+        ```js
+        // 有这2句代码 这样从父节点方法就可以通过此应用的关系映射到子节点的$options._parentListeners中
+        // 同时正因为这个引用形成了子父通信.
+        var vnodeComponentOptions = parentVnode.componentOptions;
+        opts._parentListeners = vnodeComponentOptions.listeners;
+        ```
+
+      - initLifecycle --> 获取\$options.parent 然后把当前 vm push 进 \$parent.\$children中 --> 形成了父子依赖关系
+
+      - 根据上述mergeOptions可得 存在_parentListeners --> initEvents 中调用updateComponentListeners() -->  updateListeners(listeners, oldListeners || {}, add, remove, createOnceHandler, vm);
+
+        1. 由上面传入的参数可得 用同一套逻辑对事件进行增删改,同时增删改也是自己定义的
+
+        2. 枚举传入的事件(on) --> 
+
+           1. normalizeEvent 对 事件进行处理（3个特殊的事件passive、once、capture）
+
+           2. 拿到新的绑定的on （cur） 和旧的绑定的 old（old）
+
+           3. cur不存在报错、old不存在添加新的、都存在判断是否相等，不相等更新
+
+           4. 显然old不存在 
+
+              ```js
+              if (isUndef(cur.fns)) {
+                // 组装invoker函数并把真实调用的函数赋值到invoker.fns中
+                cur = on[name] = createFnInvoker(cur);
+              }
+              if (isTrue(event.once)) {
+                // 如果normalizeEvent 解析出来是有once 那就调用 createOnceHandler再封装一层
+                cur = on[name] = createOnceHandler(event.name, cur, event.capture);
+              }
+              // 真正添加方法
+              add(event.name, cur, event.capture, event.passive, event.params);
+              ```
+
+           5. 调用add、显然是调用vm.$on() --> 
+
+           6. vm指向child , $on的实际操作是对vm._event数组的添加(同理\$off是对vm.event的删除)
+
+        3. 枚举完成 为vm._event添加了select数组里面有一个方法
+
+        4. 枚举old --> 移除不存在或者删除的对应的方法 ($off方法看源码有注释流程就跳过了)
+
+      - 返回init 跳回component.init钩子的实现 --> 执行$mount方法
+
+   3. $mount方法 开始一直跳到 createElm(创建buttonElm) --> 创建完children接着往下走 --> 调用invokeCreateHooks -->循环cbs的create --> 因为listener存在所以进入updateDOMEListeners --> 
+
+      1. 拿到vnode.data.on --> (拿到click事件) --> 调用updateListeners --> (所以添加/删除事件的逻辑和组件添加/删除事件的逻辑是一样的,只是add不同) --> 既然一样就跳过了 --> 
+      2. add 添加原生DOM事件 -->  先调用withMacroTask 包装函数(和createFnInvoker) 类似 --> addEventListener 添加原生DOM事件 -->
+
+   4. 跳回 invokeCreateHooks  -->  跳回createElm --> 跳回patch -->  一直返回 child组件mount完成 --> 一直返回 --> createComponent
+
+   5. createComponent --> 执行完init钩子往下执行 --> 
+
+      1. 在component.init钩子的时候已经对vnode.componentInstance赋值 所以走进 initComponent函数 --> initComponent(vnode, insertedVnodeQueue);
+      2. 在initComponent中拿到vnode.elm (拿到原生的DOM) --> 
+      3. if(isPatchable(vnode) == true ) 执行 --> 循环查找vnode.componentInstance._vnode --> 找到最低级的组件的实例的\_vnode(就是找到最低级的vnode不是组件为止/也可以理解为找到第一个不是组件的vnode) [可能有点表述不清楚,多看几遍或许你能懂] --> 故找到button的VNode ,显然返回true (同理如果找到的是文本节点那就返回false) --> 往下执行 --> 
+      4. 执行和createElm后面一样的逻辑 执行  invokeCreateHooks(调用cbs创建的钩子) 和 setScope设置css作用域 
+      5. 执行invokeCreateHooks -第3个 -->  updateDOMListeners --> updateListeners() --> 添加组件传入的click事件 --> 后面又是一样的跳过 --> 完成整个生成的过程
+
+**稍微梳理一下:**
+
+1. 首先初始化component的时候先绑定组件事件(就是修改vm._event)
+2. 然后createChildren[button]绑定 button 的click事件 --> 所以执行 Button childed!!  并执行emit --> 执行 组件绑定的事件 --> 输出 Child select!
+3. 然后在组件上绑定的click 是最后绑定的所以 后执行 输出 --> Child clicked!
+
