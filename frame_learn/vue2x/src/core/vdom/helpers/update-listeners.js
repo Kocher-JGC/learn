@@ -25,6 +25,7 @@ const normalizeEvent = cached((name: string): {
   }
 })
 
+/** 对调用的fn进行一层包装 */
 export function createFnInvoker (fns: Function | Array<Function>): Function {
   function invoker () {
     const fns = invoker.fns
@@ -42,6 +43,11 @@ export function createFnInvoker (fns: Function | Array<Function>): Function {
   return invoker
 }
 
+/** 更新事件
+ * 1. 枚举on --> 进行新的事件绑定或者改变fns的值,因为绑定事件前经过了createFnInvoker对fn调用进行了包装
+ *  (很好的利用了作用域和内存指针的关系,以及优化了性能不用多次调用绑定)
+ * 2. 最后枚举oldOn --> 移除旧没有对应没有name的事件
+ */
 export function updateListeners (
   on: Object,
   oldOn: Object,

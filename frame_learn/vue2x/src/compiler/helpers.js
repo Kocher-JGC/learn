@@ -45,6 +45,7 @@ export function addDirective (
   el.plain = false
 }
 
+/** 添加事件的工具函数 */
 export function addHandler (
   el: ASTElement,
   name: string,
@@ -53,7 +54,7 @@ export function addHandler (
   important?: boolean,
   warn?: Function
 ) {
-  modifiers = modifiers || emptyObject
+  modifiers = modifiers || emptyObject // 修饰符
   // warn prevent and passive modifier
   /* istanbul ignore if */
   if (
@@ -66,17 +67,19 @@ export function addHandler (
     )
   }
 
+  /** 三个特殊的修饰符的处理 */
   // check capture modifier
-  if (modifiers.capture) {
+  if (modifiers.capture) { // 使用事件捕获模式 (内部事件触发前先触发该事件)
     delete modifiers.capture
     name = '!' + name // mark the event as captured
   }
   if (modifiers.once) {
     delete modifiers.once
-    name = '~' + name // mark the event as once
+    name = '~' + name // mark the event as once 单次事件
   }
   /* istanbul ignore if */
   if (modifiers.passive) {
+    // 提高移动设备的性能尤其有用。(某一事件即将触发时候调用,在触发事件前调用提高性能)
     delete modifiers.passive
     name = '&' + name // mark the event as passive
   }
@@ -84,6 +87,8 @@ export function addHandler (
   // normalize click.right and click.middle since they don't actually fire
   // this is technically browser-specific, but at least for now browsers are
   // the only target envs that have right/middle clicks.
+  // 规范化click.right和click.middle，因为它们实际上不触发，这在技术上是特定于浏览器的，
+  // 但至少现在浏览器是唯一具有右键/中键单击的目标env。
   if (name === 'click') {
     if (modifiers.right) {
       name = 'contextmenu'
@@ -93,7 +98,7 @@ export function addHandler (
     }
   }
 
-  let events
+  let events // 区分nativeEvent和event添加对应事件的处理
   if (modifiers.native) {
     delete modifiers.native
     events = el.nativeEvents || (el.nativeEvents = {})
@@ -101,6 +106,7 @@ export function addHandler (
     events = el.events || (el.events = {})
   }
 
+  /** 组装事件处理体(value)和修饰符(modifiers) */
   const newHandler: any = {
     value: value.trim()
   }
@@ -109,6 +115,11 @@ export function addHandler (
   }
 
   const handlers = events[name]
+  /** 对对应的事件进行处理
+   * 1.是一个数组区分important进行向前添加还是向后添加
+   * 2.不是一个数组但是有同样name的事件,区分important,形成一个有调用顺序的数组
+   * 3.直接添加handler
+   */
   /* istanbul ignore if */
   if (Array.isArray(handlers)) {
     important ? handlers.unshift(newHandler) : handlers.push(newHandler)
@@ -118,7 +129,7 @@ export function addHandler (
     events[name] = newHandler
   }
 
-  el.plain = false
+  el.plain = false // 修改plain属性有何用?
 }
 
 /** 获取绑定的值或者静态值 （多重查找）*/

@@ -142,7 +142,7 @@ export function lifecycleMixin (Vue: Class<Component>) {
     // fire destroyed hook 销毁完成的钩子
     callHook(vm, 'destroyed')
     // turn off all instance listeners.
-    // 销毁完成后取消所有实例的事件监听
+    // 销毁完成后取消所有实例的事件监听(组件事件实际是vm._event的组装)
     vm.$off()
     // 移除 __vue__ 和 $vnode.parent 的引用
     // remove __vue__ reference
@@ -300,6 +300,7 @@ export function updateChildComponent (
   listeners = listeners || emptyObject
   const oldListeners = vm.$options._parentListeners
   // 先更新_parentListeners 再调用 updateComponentListeners 更新 ？？ 为何如此
+  // 因为事件的更新实际上是对vm._events进行增删改查,所以要换过来同时更新
   vm.$options._parentListeners = listeners
   updateComponentListeners(vm, listeners, oldListeners)
 

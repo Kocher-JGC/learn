@@ -93,7 +93,9 @@ export function initInternalComponent (vm: Component, options: InternalComponent
   // 父占位符节点的compOpts
   const vnodeComponentOptions = parentVnode.componentOptions
   opts.propsData = vnodeComponentOptions.propsData
-  opts._parentListeners = vnodeComponentOptions.listeners
+  // 此处因为是组件的实例的merge,所以该获取的listener是在父级作用域传进来的变量所以就可以进行子父通讯
+  // 所以绑定事件是绑定自身的而不是父级的只是内存引用和绑定的关系而已(作用域链)
+  opts._parentListeners = vnodeComponentOptions.listeners 
   opts._renderChildren = vnodeComponentOptions.children
   opts._componentTag = vnodeComponentOptions.tag
 

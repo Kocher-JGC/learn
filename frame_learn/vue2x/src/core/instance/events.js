@@ -16,7 +16,8 @@ export function initEvents (vm: Component) {
   // init parent attached events // 初始化父级附加事件
   const listeners = vm.$options._parentListeners
   if (listeners) {
-    // 更新组件事件 ==> 用意？
+    // 更新组件事件 ==> 用意？(向组件添加父级传进来的自定义事件)
+    // 因为这些事件是组件的自定义事件
     updateComponentListeners(vm, listeners)
   }
 }
@@ -44,7 +45,7 @@ export function updateComponentListeners (
   oldListeners: ?Object
 ) {
   target = vm
-  /** 对比新旧事件 进行添加删除、更新到旧事件上 **/
+  /** 对比新旧事件 进行添加删除、更新到旧事件上 (实际上向_events添加或者删除事件[变量])**/
   updateListeners(listeners, oldListeners || {}, add, remove, vm)
   target = undefined
 }
@@ -98,7 +99,7 @@ export function eventsMixin (Vue: Class<Component>) {
       return vm
     }
     // specific event // 找到特定事件是否存在
-    const cbs = vm._events[event]
+    const cbs = vm._events[event] //对应事件的数组
     if (!cbs) {
       return vm
     }
@@ -137,7 +138,7 @@ export function eventsMixin (Vue: Class<Component>) {
       }
     }
     // 触发单个或者多个特定事件类型的事件 （所以一个事件类型可以绑定多次，可不可以当观察者使用？？）
-    let cbs = vm._events[event]
+    let cbs = vm._events[event] // 触发先前绑定的事件(函数的指针)
     if (cbs) {
       cbs = cbs.length > 1 ? toArray(cbs) : cbs
       const args = toArray(arguments, 1)
