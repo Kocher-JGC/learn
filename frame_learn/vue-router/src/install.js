@@ -4,8 +4,9 @@ import Link from './components/link'
 export let _Vue
 
 export function install (Vue) {
+  // 已经实例了返回
   if (install.installed && _Vue === Vue) return
-  install.installed = true
+  install.installed = true // 标记状态
 
   _Vue = Vue
 
@@ -18,9 +19,11 @@ export function install (Vue) {
     }
   }
 
+  /* 这就是中重点,向Vue混入2个钩子,进行注册和绑定 **/
   Vue.mixin({
     beforeCreate () {
       if (isDef(this.$options.router)) {
+        // ** *8
         this._routerRoot = this
         this._router = this.$options.router
         this._router.init(this)
