@@ -9,12 +9,14 @@ const commaRE = /%2C/g
 // fixed encodeURIComponent which is more conformant to RFC3986:
 // - escapes [!'()*]
 // - preserve commas
-const encode = str => encodeURIComponent(str)
-  .replace(encodeReserveRE, encodeReserveReplacer)
-  .replace(commaRE, ',')
+const encode = str => encodeURIComponent(str)  
+  .replace(encodeReserveRE, encodeReserveReplacer) // 编码的时候将几个特殊的转化%+16进制的
+  .replace(commaRE, ',') // 把,换回来
 
 const decode = decodeURIComponent
 
+// 将url的参数解析成json并加上额外的参数 
+// 解析查询
 export function resolveQuery (
   query: ?string,
   extraQuery: Dictionary<string> = {},
@@ -34,34 +36,38 @@ export function resolveQuery (
   return parsedQuery
 }
 
+// 把url的参数解析成json
 function parseQuery (query: string): Dictionary<string> {
   const res = {}
 
-  query = query.trim().replace(/^(\?|#|&)/, '')
+  query = query.trim().replace(/^(\?|#|&)/, '') // 去掉?,#,&
 
   if (!query) {
-    return res
+    return res // 空的query
   }
 
+  // 切开参数的第一刀
   query.split('&').forEach(param => {
-    const parts = param.replace(/\+/g, ' ').split('=')
-    const key = decode(parts.shift())
-    const val = parts.length > 0
+    const parts = param.replace(/\+/g, ' ').split('=') // 把+去掉然后再切一刀
+    const key = decode(parts.shift()) // 第一是key拿到并解码
+    const val = parts.length > 0 //用=链接字符串(为什么要有=链接,难道是下面编译的时候有2维?)
       ? decode(parts.join('='))
       : null
 
+    // 添加结果一次到多次
     if (res[key] === undefined) {
-      res[key] = val
+      res[key] = val // 第一次
     } else if (Array.isArray(res[key])) {
-      res[key].push(val)
+      res[key].push(val) // 第2+次
     } else {
-      res[key] = [res[key], val]
+      res[key] = [res[key], val] // 第2次
     }
   })
 
   return res
 }
 
+/** 就是编译和生成URL参数的 **/
 export function stringifyQuery (obj: Dictionary<string>): string {
   const res = obj ? Object.keys(obj).map(key => {
     const val = obj[key]
@@ -71,9 +77,10 @@ export function stringifyQuery (obj: Dictionary<string>): string {
     }
 
     if (val === null) {
-      return encode(key)
+      return encode(key) // 没有值对key进行编码
     }
 
+    // 是数组的话会再来一次
     if (Array.isArray(val)) {
       const result = []
       val.forEach(val2 => {
@@ -89,7 +96,8 @@ export function stringifyQuery (obj: Dictionary<string>): string {
       return result.join('&')
     }
 
+    // 编码key和val并用=链接
     return encode(key) + '=' + encode(val)
-  }).filter(x => x.length > 0).join('&') : null
+  }).filter(x => x.length > 0).join('&') : null // 去除无效的,以及用&链接
   return res ? `?${res}` : ''
 }

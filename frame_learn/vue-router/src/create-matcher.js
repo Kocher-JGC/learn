@@ -17,26 +17,31 @@ export function createMatcher (
   routes: Array<RouteConfig>,
   router: VueRouter
 ): Matcher {
+  // 处理好路由记录,拿到所有处理结果
   const { pathList, pathMap, nameMap } = createRouteMap(routes)
 
+  // 定义一个函数(意味着在处理的时候可以接着添加)
   function addRoutes (routes) {
     createRouteMap(routes, pathList, pathMap, nameMap)
   }
 
   function match (
-    raw: RawLocation,
+    raw: RawLocation  ,
     currentRoute?: Route,
     redirectedFrom?: Location
   ): Route {
+    // 标准化
     const location = normalizeLocation(raw, currentRoute, false, router)
     const { name } = location
 
-    if (name) {
-      const record = nameMap[name]
+    // name存在就有问题??
+    // 何以证明name存在就表示该路由不存在??
+    if (name) { 
+      const record = nameMap[name] // 拿已经添加到路由记录对应name中的记录
       if (process.env.NODE_ENV !== 'production') {
         warn(record, `Route with name '${name}' does not exist`)
       }
-      if (!record) return _createRoute(null, location)
+      if (!record) return _createRoute(null, location) // 不存在就创建新的返回
       const paramNames = record.regex.keys
         .filter(key => !key.optional)
         .map(key => key.name)
@@ -166,6 +171,9 @@ export function createMatcher (
     return createRoute(record, location, redirectedFrom, router)
   }
 
+  // 在该方法中,都是在定义方法,然后返回了2个方法
+  // 一个match -->
+  // 一个其实是调用createRouteMap向现有路由记录里面再添加路由
   return {
     match,
     addRoutes

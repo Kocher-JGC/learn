@@ -13,18 +13,20 @@ export function normalizeLocation (
   append: ?boolean,
   router: ?VueRouter
 ): Location {
+  // 对原始路由进行转换
   let next: Location = typeof raw === 'string' ? { path: raw } : raw
-  // named target
+  // named target (如果name存在,并且返回的话match方法实际会报错的?)
+  // 如果是已经标准化的也返回
   if (next.name || next._normalized) {
     return next
   }
 
-  // relative params
+  // relative params 
   if (!next.path && next.params && current) {
-    next = extend({}, next)
-    next._normalized = true
-    const params: any = extend(extend({}, current.params), next.params)
-    if (current.name) {
+    next = extend({}, next) // 复制一份
+    next._normalized = true // 标记
+    const params: any = extend(extend({}, current.params), next.params) // 复制params
+    if (current.name) { // 更新名字和参数?
       next.name = current.name
       next.params = params
     } else if (current.matched.length) {
