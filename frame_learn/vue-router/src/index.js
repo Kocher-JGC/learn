@@ -39,7 +39,7 @@ export default class VueRouter {
     this.beforeHooks = []
     this.resolveHooks = []
     this.afterHooks = []
-    //
+    // 调用createRouteMap创建路由记录，并且拿到match,addRoutes 方法
     this.matcher = createMatcher(options.routes || [], this)
 
     let mode = options.mode || 'hash' // 处理History模式 （默认为hash、也可以为H5的history）
