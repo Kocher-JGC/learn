@@ -51,7 +51,7 @@ export function addHandler (
   name: string,
   value: string,
   modifiers: ?ASTModifiers,
-  important?: boolean,
+  important?: boolean, // 向前还是向后添加handler
   warn?: Function
 ) {
   modifiers = modifiers || emptyObject // 修饰符
