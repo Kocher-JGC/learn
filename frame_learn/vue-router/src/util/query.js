@@ -9,13 +9,13 @@ const commaRE = /%2C/g
 // fixed encodeURIComponent which is more conformant to RFC3986:
 // - escapes [!'()*]
 // - preserve commas
-const encode = str => encodeURIComponent(str)  
+const encode = str => encodeURIComponent(str)
   .replace(encodeReserveRE, encodeReserveReplacer) // 编码的时候将几个特殊的转化%+16进制的
   .replace(commaRE, ',') // 把,换回来
 
 const decode = decodeURIComponent
 
-// 将url的参数解析成json并加上额外的参数 
+// 将url的参数解析成json并加上额外的参数
 // 解析查询
 export function resolveQuery (
   query: ?string,
@@ -30,7 +30,7 @@ export function resolveQuery (
     process.env.NODE_ENV !== 'production' && warn(false, e.message)
     parsedQuery = {}
   }
-  for (const key in extraQuery) {
+  for (const key in extraQuery) { // 添加额外的query
     parsedQuery[key] = extraQuery[key]
   }
   return parsedQuery
