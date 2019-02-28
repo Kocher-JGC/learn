@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="../../lib/css/index.css">
+  <script src="../../lib/js/vue.js"></script>
+</head>
+<body>
+
+  <div id="app"></div>
+
+  <script>
+    window.onload = function() {
+      const child = {
+        template: `
+        <div>
+          <input :value="value" @input="updateValue" placeholder="" >
+        </div>
+        `,
+        model: {
+          prop: 'msg',
+          event: 'change'
+        },
+        props:['msg'],
+        methods: {
+          updateValue(e) {
+            this.$emit('input',e.target.value)
+          }
+        },
+
+      }
+      /** v-model 绑定在DOM上 **/
+      let vm = new Vue({
+        el: '#app',
+        template: `
+          <h3>v-model 绑定在组件上</h3>
+          <p>输入的内容: {{ message }} </p>
+          <child v-model="message"></child>
+        `,
+        components: {
+          child
+        },
+        data() {
+          return {
+            message: '信息'
+          }
+        }
+      })
+    }
+  </script>
+</body>
+</html>
