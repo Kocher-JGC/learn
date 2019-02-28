@@ -17,7 +17,7 @@
       const child = {
         template: `
         <div>
-          <input :value="value" @input="updateValue" placeholder="" >
+          <input :value="msg" @input="updateValue" placeholder="" >
         </div>
         `,
         model: {
@@ -27,7 +27,7 @@
         props:['msg'],
         methods: {
           updateValue(e) {
-            this.$emit('input',e.target.value)
+            this.$emit('change',e.target.value)
           }
         },
 
@@ -36,9 +36,11 @@
       let vm = new Vue({
         el: '#app',
         template: `
+        <div>
           <h3>v-model 绑定在组件上</h3>
           <p>输入的内容: {{ message }} </p>
           <child v-model="message"></child>
+        </div>
         `,
         components: {
           child

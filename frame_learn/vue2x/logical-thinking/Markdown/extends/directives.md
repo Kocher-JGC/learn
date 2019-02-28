@@ -260,3 +260,68 @@ _c('div',[
       - change（onCompositionEnd）
 
    5. 由上面可以得出为什么v-model可以在输入完成后才更新试图，而直接写@+：立马刷新视图的区别。
+
+## v-model (绑定在component上)
+
+```html
+<div id="app"></div>
+
+<script>
+window.onload = function() {
+  const child = {
+    template: `
+    <div>
+      <input :value="msg" @input="updateValue" placeholder="" >
+    </div>
+    `,
+    model: {
+      prop: 'msg',
+      event: 'change'
+    },
+    props:['msg'],
+    methods: {
+      updateValue(e) {
+        this.$emit('change',e.target.value)
+      }
+    },
+
+  }
+  /** v-model 绑定在DOM上 **/
+  let vm = new Vue({
+    el: '#app',
+    template: `
+    <div>
+      <h3>v-model 绑定在组件上</h3>
+      <p>输入的内容: {{ message }} </p>
+      <child v-model="message"></child>
+    </div>
+    `,
+    components: {
+      child
+    },
+    data() {
+      return {
+        message: '信息'
+      }
+    }
+  })
+}
+</script>
+```
+
+### 父组件的compiler阶段
+
+#### parse生成AST节点
+
+- 由上一个例子的parse过程可以知道生成的ast节点
+- attrsList\attrMap,都只有一个值那就是v-model解析出来的
+- 同时directive上也有一个name为model的对象(addDirective解析出来的)
+
+#### generate 直接来到解析child标签的时候进行genElement --> genData --> genDirective
+
+1. 显然dirs只有一个(model)
+2. 解析mdoel指令,同样的gen存在,调用gen--> 实际调用的是model函数 -->
+   1. 拿值value\modifiers\tag\type
+   2. el未被编译成组件,component不存在,来到最后的else if --> child 标签不是一个平台的保留标签--> 调用genComponentModel -->
+      1. 
+
