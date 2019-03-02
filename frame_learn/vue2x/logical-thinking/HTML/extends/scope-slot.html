@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="../../lib/css/index.css">
+  <script src="../../lib/js/vue.js"></script>
+</head>
+<body>
+
+  <div id="app">
+    <app-slot>
+      <p slot="default" slot-scope="defaultData">{{ defaultData }}</p>
+      <template  slot="other" slot-scope="otherData">
+          {{ otherData }}
+      </template>
+    </app-slot>
+  </div>
+
+  <script>
+    window.onload = function() {
+      let AppSlot = {
+        template: `
+        <div class="container">
+          <slot text="Hello" :msg="msg"></slot>
+          <p><slot name="other" :otherMsg="ohterMsg"></slot></p>
+        </div>`,
+        data() {
+          return {
+            msg: '子组件的默认信息',
+            ohterMsg: '子组件的其他信息'
+          }
+        },
+      }
+
+      let vm = new Vue({
+        el: '#app',
+        components: { AppSlot }
+      })
+    }
+  </script>
+</body>
+</html>
