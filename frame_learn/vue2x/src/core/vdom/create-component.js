@@ -249,7 +249,7 @@ export function createComponentInstanceForVnode (
     options.render = inlineTemplate.render
     options.staticRenderFns = inlineTemplate.staticRenderFns
   }
-  // Ctor是什么？？（在继承中出现过）
+  // Ctor是什么？？（在继承中出现过）// 组件实例的时候调用的构造函数进行实例化组件
   return new vnode.componentOptions.Ctor(options)
 }
 

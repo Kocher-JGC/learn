@@ -10020,7 +10020,7 @@
     if (node.type === 3) { // text
       return true
     }
-    console.log(node.tag,Object.keys(node).every(isStaticKey));
+    // console.log(node.tag,Object.keys(node).every(isStaticKey));
 
     return !!(node.pre || (
       !node.hasBindings && // no dynamic bindings

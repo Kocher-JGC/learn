@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="../../lib/css/index.css">
+  <script src="../../lib/js/vue.js"></script>
+</head>
+<body>
+
+  <div id="app">
+    <app-slot>
+      <h2 slot="header">{{ tit }}</h2>
+      <p>{{ msg }}</p>
+      <p slot="footer">{{ footer }}</p>
+      <p>在后面的父组件默认的信息</p>
+    </app-slot>
+  </div>
+
+  <script>
+    window.onload = function() {
+      let AppSlot = {
+        template: `
+        <div class="container">
+          <header><slot name='header'><h2>子组件默认头部</h2></slot></header>
+          <main><slot>我是默认的主体内容</slot></main>
+          <footer><slot name="footer"></slot></footer>
+        </div>`
+      }
+
+      let vm = new Vue({
+        el: '#app',
+        data() {
+          return {
+            tit: '父组件头部',
+            msg: '父组件的主体内容',
+            footer: '父组件底部'
+          }
+        },
+        components: { AppSlot }
+      })
+    }
+  </script>
+</body>
+</html>

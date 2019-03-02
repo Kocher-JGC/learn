@@ -35,23 +35,6 @@ window.onload = function() {
 </script>
 ```
 
-genDirectivesk
-
-baseOpts获取directives
-
-4个model文件
-
-1. compiler阶段
-   1. parse --> 提取directive
-   2. generate --> 生成code(语法塘事件)
-2. path -->
-   1. invokeCreateHooks -->
-      1. updateDOMListener
-      2. updateDOMProps
-      3. updateDirective
-
-
-
 ### parse提取directive（parse阶段）
 
 1. parse --> parseHTML(解析到input模板的时候) -->
