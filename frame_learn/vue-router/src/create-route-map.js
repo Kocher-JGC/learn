@@ -82,13 +82,13 @@ function addRouteRecord (
     path: normalizedPath, // 标准后的路径
     regex: compileRouteRegex(normalizedPath, pathToRegexpOptions), // 拿到路由匹配的正则表达式
     components: route.components || { default: route.component }, // 路由对应的comp
-    instances: {},
-    name,
-    parent,
-    matchAs, //?
+    instances: {}, // 实例
+    name, // 上面的获取的name
+    parent, // 父级
+    matchAs, //
     redirect: route.redirect, // 重定向
-    beforeEnter: route.beforeEnter,
-    meta: route.meta || {}, 
+    beforeEnter: route.beforeEnter, // 传入的插入前的钩子
+    meta: route.meta || {},  // 传入的meta
     props: route.props == null //组件中的props
       ? {}
       : route.components
