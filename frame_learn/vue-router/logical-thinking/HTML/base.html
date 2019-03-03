@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <script src="../lib/js/vue.js"></script>
+  <script src="../lib/js/vue-router.js"></script>
+</head>
+<body>
+
+  <div id="app">
+    <h2>Hello Router!</h2>
+    <p>
+      <router-link to="/route">Go to route</router-link>
+      <router-link to="/bar">Go to Bar</router-link>
+    </p>
+    <router-view></router-view>
+  </div>
+  <script>
+    window.onload = function() {
+      const Route1 = { template: '<div>Router Render</div>' };
+      const Route2 = { 
+        template: `
+          <div>
+            我是路由2渲染了<router-link to="/bar/foo">Go to foo</router-link>
+            <router-view></router-view>
+          </div>
+        ` 
+      };
+      const Route3 = { template: '<div>我路由2的子路路由</div>' };
+
+      const routes = [
+        { path: '/route', component: Route1 },
+        { 
+          path: '/bar' ,  
+          component: Route2 ,
+          children: [
+            {
+              path: 'foo',
+              component: Route3
+            }
+          ] 
+        }
+      ];
+
+      const router = new VueRouter({ routes })
+
+      console.log( new Vue({
+        el: '#app',
+        router
+      }) )
+    }
+  </script>
+</body>
+</html>
