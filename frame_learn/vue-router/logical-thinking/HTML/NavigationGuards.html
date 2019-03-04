@@ -22,7 +22,8 @@
         template: `
           <div>
             <div>foo</div>
-            <router-link to="bar" :append="true">Go to Bar</router-link>
+            <router-link to="/foo/bar/1" :replace="true">Go to Bar1</router-link>
+            <router-link to="bar/2" :append="true">Go to Bar2</router-link>
             <router-view></router-view>
           </div>
         `,
@@ -30,6 +31,7 @@
           // 在渲染该组件的对应路由被confirm前调用
           // 不能!获取组件实例 'this'
           // 因为当守卫执行前,组件实例还没被创建
+          debugger
           console.log('foo before router enter');
           console.log('this the this?', this);
           next((vm)=>{
@@ -60,7 +62,7 @@
               path: 'bar/:id',
               component: Bar,
               beforeEnter: (to, from, next) => {
-                console.log('foo before enter');
+                console.log('bar before enter');
                 next();
               }
             }
