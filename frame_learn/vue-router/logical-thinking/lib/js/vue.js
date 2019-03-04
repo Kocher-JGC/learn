@@ -1000,7 +1000,7 @@
     customSetter,
     shallow
   ) {
-    // debugger
+    // 
     var dep = new Dep();
 
     var property = Object.getOwnPropertyDescriptor(obj, key);
@@ -1020,7 +1020,7 @@
       enumerable: true,
       configurable: true,
       get: function reactiveGetter () {
-        // debugger
+        // 
         var value = getter ? getter.call(obj) : val;
         if (Dep.target) {
           dep.depend();
@@ -1034,7 +1034,7 @@
         return value
       },
       set: function reactiveSetter (newVal) {
-        // debugger
+        // 
         var value = getter ? getter.call(obj) : val;
         /* eslint-disable no-self-compare */
         if (newVal === value || (newVal !== newVal && value !== value)) {
@@ -2755,7 +2755,7 @@
 
   function lifecycleMixin (Vue) {
     Vue.prototype._update = function (vnode, hydrating) {
-      // debugger
+      // 
       var vm = this;
       var prevEl = vm.$el;
       var prevVnode = vm._vnode;
@@ -2843,7 +2843,7 @@
     el,
     hydrating
   ) {
-    // debugger
+    // 
     vm.$el = el;
     if (!vm.$options.render) {
       vm.$options.render = createEmptyVNode;
@@ -4447,7 +4447,7 @@
     normalizationType,
     alwaysNormalize
   ) {
-    // debugger
+    // 
     if (Array.isArray(data) || isPrimitive(data)) {
       normalizationType = children;
       children = data;
@@ -4466,7 +4466,7 @@
     children,
     normalizationType
   ) {
-    // debugger
+    // 
     if (isDef(data) && isDef((data).__ob__)) {
       warn(
         "Avoid using observed data object as vnode data: " + (JSON.stringify(data)) + "\n" +
@@ -4617,7 +4617,7 @@
     };
 
     Vue.prototype._render = function () {
-      // debugger
+      // 
       var vm = this;
       var ref = vm.$options;
       var render = ref.render;
@@ -4633,7 +4633,7 @@
       // render self
       var vnode;
       try {
-        // debugger
+        // 
         vnode = render.call(vm._renderProxy, vm.$createElement);
       } catch (e) {
         handleError(e, vm, "render");
@@ -4674,7 +4674,7 @@
 
   function initMixin (Vue) {
     Vue.prototype._init = function (options) {
-      debugger
+      
       var vm = this;
       // a uid
       vm._uid = uid$3++;
@@ -4696,7 +4696,7 @@
         // internal component options needs special treatment.
         initInternalComponent(vm, options);
       } else {
-        // debugger
+        // 
         vm.$options = mergeOptions(
           resolveConstructorOptions(vm.constructor),
           options || {},
@@ -4725,7 +4725,7 @@
         measure(("vue " + (vm._name) + " init"), startTag, endTag);
       }
 
-      // debugger
+      // 
       if (vm.$options.el) {
         vm.$mount(vm.$options.el);
       }
@@ -4868,7 +4868,7 @@
      * Class inheritance
      */
     Vue.extend = function (extendOptions) {
-      debugger
+      
       extendOptions = extendOptions || {};
       var Super = this;
       var SuperId = Super.cid;
@@ -5636,7 +5636,7 @@
       ownerArray,
       index
     ) {
-      debugger
+      
       if (isDef(vnode.elm) && isDef(ownerArray)) {
         // This vnode was used in a previous render!
         // now it's used as a new node, overwriting its elm would cause
@@ -5890,7 +5890,7 @@
     }
 
     function updateChildren (parentElm, oldCh, newCh, insertedVnodeQueue, removeOnly) {
-      debugger
+      
       var oldStartIdx = 0;
       var newStartIdx = 0;
       var oldEndIdx = oldCh.length - 1;
@@ -10684,7 +10684,7 @@
   var prohibitedKeywordRE = new RegExp('\\b' + (
     'do,if,for,let,new,try,var,case,else,with,await,break,catch,class,const,' +
     'super,throw,while,yield,delete,export,import,return,switch,default,' +
-    'extends,finally,continue,debugger,function,arguments'
+    'extends,finally,continue,,function,arguments'
   ).split(',').join('\\b|\\b') + '\\b');
 
   // these unary operators should not be used as property/method names
@@ -10944,7 +10944,7 @@
     template,
     options
   ) {
-    debugger
+    
     var ast = parse(template.trim(), options);
     if (options.optimize !== false) {
       optimize(ast, options);

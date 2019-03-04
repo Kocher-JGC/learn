@@ -123,7 +123,7 @@ export default class VueRouter {
 
     history.listen(route => {
       this.apps.forEach((app) => {
-        app._route = route
+        app._route = route // 数据改变触发视图的更新
       })
     })
   }
