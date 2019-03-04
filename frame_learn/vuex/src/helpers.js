@@ -1,5 +1,6 @@
 /**
  * Reduce the code which written in Vue.js for getting the state.
+ * 减少用vue.js编写的获取状态的代码。
  * @param {String} [namespace] - Module's namespace
  * @param {Object|Array} states # Object's item can be a function which accept state and getters for param, you can do something for state and getters in it.
  * @param {Object}
@@ -30,6 +31,7 @@ export const mapState = normalizeNamespace((namespace, states) => {
 
 /**
  * Reduce the code which written in Vue.js for committing the mutation
+ * 减少用vue.js编写的用于提交mutation的代码
  * @param {String} [namespace] - Module's namespace
  * @param {Object|Array} mutations # Object's item can be a function which accept `commit` function as the first param, it can accept anthor params. You can commit mutation and do any other things in this function. specially, You need to pass anthor params from the mapped function.
  * @return {Object}
@@ -57,6 +59,7 @@ export const mapMutations = normalizeNamespace((namespace, mutations) => {
 
 /**
  * Reduce the code which written in Vue.js for getting the getters
+ * 减少用vue.js编写的获取getter的代码
  * @param {String} [namespace] - Module's namespace
  * @param {Object|Array} getters
  * @return {Object}
@@ -84,6 +87,7 @@ export const mapGetters = normalizeNamespace((namespace, getters) => {
 
 /**
  * Reduce the code which written in Vue.js for dispatch the action
+ * 减少用vue.js编写的用于调度操作的代码
  * @param {String} [namespace] - Module's namespace
  * @param {Object|Array} actions # Object's item can be a function which accept `dispatch` function as the first param, it can accept anthor params. You can dispatch action and do any other things in this function. specially, You need to pass anthor params from the mapped function.
  * @return {Object}
@@ -111,6 +115,7 @@ export const mapActions = normalizeNamespace((namespace, actions) => {
 
 /**
  * Rebinding namespace param for mapXXX function in special scoped, and return them by simple object
+ * 重新绑定特殊作用域中mapxxx函数的命名空间参数，并通过简单对象返回它们
  * @param {String} namespace
  * @return {Object}
  */
@@ -136,6 +141,7 @@ function normalizeMap (map) {
 
 /**
  * Return a function expect two param contains namespace and map. it will normalize the namespace and then the param's function will handle the new namespace and the map.
+ * 返回一个函数，需要两个参数，其中包含命名空间和映射。它将规范化名称空间，然后参数的函数将处理新名称空间和映射
  * @param {Function} fn
  * @return {Function}
  */
@@ -153,6 +159,7 @@ function normalizeNamespace (fn) {
 
 /**
  * Search a special module from store by namespace. if module not exist, print error message.
+ * 在特殊模式从商店搜索模块的命名空间。if not exist模块，打印错误消息。
  * @param {Object} store
  * @param {String} helper
  * @param {String} namespace
