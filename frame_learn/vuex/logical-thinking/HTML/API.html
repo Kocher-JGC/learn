@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <script src="../lib/js/vue.js"></script>
+  <script src="../lib/js/vuex.js"></script>
+</head>
+<body>
+
+  <div id="app">
+    <h2>Vuex Learn</h2>
+    <div>root state count: {{ count }}</div>
+    <div>root getter computedCount: {{ computedCount }}</div>
+    <div>module A state count: {{ aCount }}</div>
+    <div>module A getter computedCount: {{ aComputedCount }}</div>
+    <div><button @click="increment" >root mutation increment</button></div>
+    <div><button @click="incrementAct" >root action increment</button></div>
+    <div><button @click="aIncrement" >module A mutation increment</button></div>
+    <div><button @click="aIncrementAct" >module A mutation increment</button></div>
+  </div>
+  <script>
+    window.onload = function() {
+
+      const moduleA = {
+        namespaced: true,
+        state: {
+          count: 1,
+        },
+        mutations: {
+          increment(state) {
+            state.count++
+          }
+        },
+        actions: {
+          increment(context) {
+            context.commit('increment')
+          }
+        },
+        getters: {
+          computedCount(state) {
+            return state.count + 1 
+          }
+        }
+      }
+
+      const moduleB = {
+        namespaced: true,
+        state: {
+          count: 1,
+        },
+        mutations: {
+          increment(state) {
+            state.count++
+          }
+        },
+        actions: {
+          increment(context) {
+            context.commit('increment')
+          }
+        },
+        getters: {
+          computedCount(state) {
+            return state.count + 1 
+          }
+        }
+      }
+
+      const store = new Vuex.Store({
+        modules: {
+          a: moduleA,
+          b: moduleB,
+        },
+        state: {
+          count: 1
+        },
+        getters: {
+          computedCount(state) {
+            return state.count + 1;
+          }
+        },
+        mutations: {
+          increment(state) {
+            state.count++
+          }
+        },
+        actions: {
+          increment(context) {
+            return new Promise(resolve => {
+              setTimeout(()=>{
+                context.commit('increment');
+                resolve(context.rootState)
+              }, 1000)
+            })
+          }
+        },
+        strict: true
+      })
+      console.log(store);
+      
+      window.store = store;
+
+      // 获取state(获取数据)
+      // console.log(store);
+      // console.log(store.state.count);
+      // console.log(store.getters.computedCount);
+      // console.log(store.state.a.count);
+      // console.log(store.getters['a/computedCount']);
+      
+      // 异步actions
+      // console.log(store.state.count);
+      // store.commit('increment');
+      // console.log(store.state.count);
+      // store.dispatch('increment').then(rootState => {
+      //   console.log(rootState.count);
+      // })
+      // console.log(store.state.count);
+      
+
+      console.log( new Vue({
+        el: '#app',
+        store,
+        computed: {
+          ...Vuex.mapState([
+            'count'
+          ]),
+          ...Vuex.mapGetters([
+            'computedCount'
+          ]),
+          ...Vuex.mapState('a', {
+            aCount: 'count'
+          }),
+          ...Vuex.mapGetters('a',{
+            aComputedCount: 'computedCount'
+          }),
+        },
+        methods: {
+          ...Vuex.mapMutations([
+            'increment'
+          ]),
+          ...Vuex.mapActions({
+            incrementAct: 'increment'
+          }),
+          ...Vuex.mapMutations('a',{
+            aIncrement: 'increment'
+          }),
+          ...Vuex.mapActions('a', {
+            aIncrementAct: 'increment'
+          })
+        },
+      }) )
+    }
+  </script>
+</body>
+</html>
