@@ -169,55 +169,27 @@
    - path
 4. 更新数据
 
-## createComponent创建VNode
+#### createComponent创建VNode
+#### _update  --> __path\_\_ 把VNode转化真实DOMs
 
 > 创建VNode--> 构造子类 --> 挂载组件钩子 --> 实例VNode
 
-## _update  --> __path\_\_ 把VNode转化真实DOMs
+### 更详细的说明请看Dome+流程
 
-## mergeOptions
+1. [简单的流程](./logical-thinking/Markdown/简单的流程.md)
+2. [mergeOptions](./logical-thinking/Markdown/合并配置.md)
+3. [生命周期钩子](./logical-thinking/Markdown/callHook.md)
+4. [Component](./logical-thinking/Markdown/Component.md)
+5. [深入响应式](./logical-thinking/Markdown/深入响应式.md)
+6. [编译](./logical-thinking/Markdown/编译.md)
 
-## 生命周期钩子
-
-## 组件注册
-
-## 异步组件
-
-## 响应式语法糖
-
-## 依赖收集和巧妙的watcher
-
-## 派发更新（触发setter和watcher)
-
-## nextTick
-
-## 检测变化的注意事项
-
-## 计算属性 VS 侦听属性
-
-## 组件更新
-
-## 原理图
-
-# 编译
-
-# Extends
-
-## event
-
-## v-model
-
-## slot
-
-## keep-alive
-
-## transition
-
-## transition-group
-
-# vue-Router
-
-# Vuex
+#### Extends
+1. [event](./logical-thinking/Markdown/extends/event.md)
+2. [directives](./logical-thinking/Markdown/extends/directives.md)
+3. [slot](./logical-thinking/Markdown/extends/slot.md)
+4. keep-alive
+5. transition
+6. transition-group
 
 
 
