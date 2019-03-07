@@ -2,7 +2,7 @@
 
 > 十大经典基本排序
 
-![分析图](..\/assets\/img\/basicsAlgorithms.jpg)
+![分析图](../assets/img/basicsAlgorithms.jpg)
 
 ## 非线性时间比较类排序
 
@@ -62,7 +62,7 @@
 
 **时间复杂度：**
 
-![shellSort](..\assets\img\shellSort.png)
+![shellSort](../assets/img/shellSort.png)
 
 ### 选择排序
 
@@ -101,11 +101,11 @@
 
 **插入节点：**二叉堆的节点插入，插入的位置是完全二叉树的最后一个位置。如插入一个0
 
-![binary-Sort](..\assets\img\binary-Sort_1.png)
+![binary-Sort](../assets/img/binary-Sort_1.png)
 
 这时候，我们让节点0和父节点6比较，如果0小于5，则让新节点“上浮”
 
-![binary-Sort](..\assets\img\binary-Sort_2.png)
+![binary-Sort](../assets/img/binary-Sort_2.png)
 
 
 
@@ -113,32 +113,32 @@
 
 **删除节点：**二叉堆的节点删除过程和插入过程正好相反，所删除的是处于堆顶的节点，比如我们删除最小堆的堆顶节点1
 
-![binary-Sort](..\assets\img\binary-Sort_3.png)
+![binary-Sort](../assets/img/binary-Sort_3.png)
 
 这时候为了维持完全二叉树的结构，我们把堆的最后一个节点10补到原本堆顶的位置。
 
-![binary-Sort](..\assets\img\binary-Sort_4.png)
+![binary-Sort](../assets/img/binary-Sort_4.png)
 
 接下来我们移动到堆顶的节点10和它的左右孩子进行比较，如果左右孩子中最小的一个比节点10小，那么节点10“下沉”。
 
-![binary-Sort](..\assets\img\binary-Sort_5.png)
+![binary-Sort](../assets/img/binary-Sort_5.png)
 
 **继续比较**
 
-![binary-Sort](..\assets\img\binary-Sort_6.png)
+![binary-Sort](../assets/img/binary-Sort_6.png)
 
 
 **构建二叉堆：**构建二叉堆，也就是把一个无序的完全二叉树调整为二叉堆，本质上就是让所有非叶子节点依次下沉。
 
-![binary-Sort](..\assets\img\binary-Sort_7.png)
+![binary-Sort](../assets/img/binary-Sort_7.png)
 
 首先，我们从最后一个非叶子节点开始，也就是从节点10开始。如果节点10大于它左右孩子中最小的一个，则节点10下沉。
 
-![binary-Sort](..\assets\img\binary-Sort_8.png)
+![binary-Sort](../assets/img/binary-Sort_8.png)
 
 接下来轮到节点3，如果节点3大于它左右孩子中最小的一个，则节点3下沉。
 
-![binary-Sort](..\assets\img\binary-Sort_9.png)
+![binary-Sort](../assets/img/binary-Sort_9.png)
 
 
 接下来轮到节点1，如果节点1大于它左右孩子中最小的一个，则节点1下沉。事实上节点1小于它的左右孩子，所以不用改变。
@@ -146,8 +146,8 @@
 接下来轮到节点7，如果节点7大于它左右孩子中最小的一个，则节点7下沉。
 
 
-![binary-Sort](..\assets\img\binary-Sort_10.png)
-![binary-Sort](..\assets\img\binary-Sort_11.png)
+![binary-Sort](../assets/img/binary-Sort_10.png)
+![binary-Sort](../assets/img/binary-Sort_11.png)
 
 这样就是，一颗无序的完全二叉树就构建成了一个最小堆。
 
@@ -226,9 +226,9 @@
 
 > 图解（来源某公众号）
 
-![countSort](..\assets\img\countSort_0.png)
-![countSort](..\assets\img\countSort_1.png)
-![countSort](..\assets\img\countSort_2.png)
+![countSort](../assets/img/countSort_0.png)
+![countSort](../assets/img/countSort_1.png)
+![countSort](../assets/img/countSort_2.png)
 
 
 **时间复杂度：总体运算量是3N+M，所以时间复杂度是o（N+M）**
