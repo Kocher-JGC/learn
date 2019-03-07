@@ -2,7 +2,7 @@
 
 > 十大经典基本排序
 
-![分析图](../assets/img/basicsAlgorithms.jpg)
+![分析图](..\/assets\/img\/basicsAlgorithms.jpg)
 
 ## 非线性时间比较类排序
 
