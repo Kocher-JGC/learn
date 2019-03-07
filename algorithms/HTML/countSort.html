@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script src="../lib/util.js"></script>
+  <script src="../data/int(6-25)15W.js"></script>
+  <title>计数排序</title>
+</head>
+
+<body>
+  <div id="app"></div>
+  <script>
+    // 1、小往左边冒泡，2、大往右边冒泡
+    // 第一个循环是数 第二个循环是改变位置
+    let ST = Date.now();
+
+    let inArr = window.arr_15W;
+    // let min = Math.min.apply(0,inArr);
+    // let max = Math.max.apply(0,inArr);
+    // 数据过多会死掉哦
+    /** 稳定版本 **/
+    // function countSort(arr) {
+    //   let min = arr[0]; let max = arr[0];
+    //   let i =0; let l = arr.length;
+    //   for( ; i < l; i++) {
+    //     if(arr[i] < min) min = arr[i];
+    //     if(arr[i] > max) max = arr[i];
+    //   }
+
+    //   let d = max - min;
+    //   // 创建统计数组并统计对应元素个数
+    //   let countArr = Array.from({length: d + 1}).fill(0);
+    //   arr.forEach(v => countArr[v-min]++);
+
+    //   // 变形数组，后面的元素等于前面的元素之和
+    //   let sum = 0;
+    //   countArr = countArr.map(v =>  sum += v );
+
+    //   // 倒序遍历原始数组，从统计数组找到正确的位置，输出到结果数值
+    //   let result = [];
+    //   for(i = l-1; i>=0; i--) {
+    //     result[ countArr[ arr[i]-min ]-1 ] = arr[i];
+    //     countArr[ arr[i] - min]--;
+    //   }
+    //   return result;
+    // }
+    /** 快速版本 **/
+    function countSort(arr) {
+      let min = arr[0]; let max = arr[0];
+      let i =0; let l = arr.length;
+      for( ; i < l; i++) {
+        if(arr[i] < min) min = arr[i];
+        if(arr[i] > max) max = arr[i];
+      }
+
+      let d = max - min;
+      // 创建统计数组并统计对应元素个数
+      let countArr = Array.from({length: d + 1}).fill(0);
+      arr.forEach(v => countArr[v-min]++);
+
+      let result = []; let index = 0;
+      for(i = 0; i<countArr.length;i++) {
+        for( let j = 0; j<countArr[i];j++){
+          result[index++] = i + min;
+        }
+      }
+      return result;
+      /** 不是复杂的逻辑更好，而且计算量，逻辑更少的好 **/
+
+      /** 更慢 **/
+      // let sum = 0;
+      // return arr.map((v,i) => {
+      //   countArr[0]--;
+      //   if(countArr[0] < 0 ) {
+      //     countArr.shift();
+      //     countArr[0]--;
+      //     sum++;
+      //   }
+      //   return min+sum;
+      // })
+    }
+    inArr = countSort(inArr)
+    let DT = Date.now();
+    console.log(DT - ST);
+    console.log(inArr);
+
+    document.querySelector('#app').innerHTML = toString(inArr);
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script src="../lib/util.js"></script>
+  <!-- <script src="../data/data.js"></script> -->
+  <!-- <script src="../data/12WData.js"></script> -->
+  <script src="../data/120WData.js"></script>
+  <!-- <script src="../data/500WData.js"></script> -->
+  <title>直接插入排序</title>
+</head>
+
+<body>
+  <div id="app"></div>
+  <script>
+    let ST = Date.now();
+    // let inArr = [52,28,73,68,51,13,1,92,94,112,9,61,57,98,62,70,6,24,97,86,88,108,114,31,65,63,2,26,19,42,80,79,17,118,89,27,38,50,113,95,100,47,53,18,107,4,117,99,22,45,30,29,58,20,23,49,82,48,110,69,115,67,25,36,59,21,109,120,34,8,15,14,103,10,74,41,7,16,87,81,78,106,44,39,56,105,43,72,3,54,33,32,93,35,37,55,5,60,40,11,101,46,64,66,76,102,71,84,85,83,90,75,119,77,96,104,116,91,111,12];
+    // let inArr = Array.from({length:20}).map((_,i)=> i).sort(_ => Math.random() < .5 ? -1 : 1)
+    let inArr = window.arr_120W; // 这数据量已经很难动了
+
+    function insertSort(arr) {
+      let l = arr.length;
+      for (let i = 1; i < l; i++) {
+        let temp = arr[i]; // 储存当前元素
+        let j = i -1;
+        // 满足当前移动的元素比前面的元素少，则移动腾出位置
+        for(; j >= 0 && temp < arr[j]; j--)
+          arr[j + 1] = arr[j]; // 移动元素
+        // 全部移动完了，把储存元素插入到最后移动的位置
+        arr[j + 1] = temp; // 当前元素比temp小，所以要插入后面一个元素
+      }
+    }
+    insertSort(inArr)
+    let DT = Date.now();
+    console.log(DT - ST);
+    console.log(inArr);
+
+
+    document.querySelector('#app').innerHTML = toString(inArr);
+  </script>
+</body>
+
+</html>

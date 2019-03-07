@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script src="../lib/util.js"></script>
+  <!-- <script src="../data/data.js"></script> -->
+  <script src="../data/12WData.js"></script>
+  <!-- <script src="../data/120WData.js"></script> -->
+  <!-- <script src="../data/500WData.js"></script> -->
+  <title>简单选择排序</title>
+</head>
+
+<body>
+  <div id="app">{{ result }}</div>
+  <script>
+    /** 简单选择排序的比较次数与序列的初始化排序无关。
+     * 假设待排序的序列有N个元素，则比较次数总是N(N-1)/2；
+     * ①当正序的时候移动最少，为0。
+     * 当序列反序时，移动次数最多，为3N(N-1)/2;，
+     * 综上所述，时间复杂度为O(N^2); **/
+    let ST = Date.now();
+    // let inArr = [52,28,73,68,51,13,1,92,94,112,9,61,57,98,62,70,6,24,97,86,88,108,114,31,65,63,2,26,19,42,80,79,17,118,89,27,38,50,113,95,100,47,53,18,107,4,117,99,22,45,30,29,58,20,23,49,82,48,110,69,115,67,25,36,59,21,109,120,34,8,15,14,103,10,74,41,7,16,87,81,78,106,44,39,56,105,43,72,3,54,33,32,93,35,37,55,5,60,40,11,101,46,64,66,76,102,71,84,85,83,90,75,119,77,96,104,116,91,111,12];
+    // let inArr = Array.from({length:20}).map((_,i)=> i).sort(_ => Math.random() < .5 ? -1 : 1)
+    let inArr = window.arr_12W;
+    // 性能一般 9S
+    function simpleSelectSort(arr) {
+      for (let i = 0, l = arr.length; i < l; i++) {
+        let index = i;
+        // 循环找到最小的数据
+        for (let j = i + 1; j < l; j++) {
+          if (arr[index] > arr[j]) index = j;
+        }
+        // 然后就调换赋值
+        temp = arr[index];
+        arr[index] = arr[i];
+        arr[i] = temp;
+      }
+    }
+    simpleSelectSort(inArr)
+    let DT = Date.now();
+    console.log(DT - ST);
+    console.log(inArr);
+
+    let result = 'inArr';
+
+    document.querySelector('#app').innerHTML = toString(inArr);
+
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script src="../lib/util.js"></script>
+  <!-- <script src="../data/data.js"></script> -->
+  <!-- <script src="../data/12WData.js"></script> -->
+  <!-- <script src="../data/120WData.js"></script> -->
+  <script src="../data/500WData.js"></script>
+  <title>快速排序</title>
+</head>
+
+<body>
+  <div id="app"></div>
+  <script>
+    // 1、小往左边冒泡，2、大往右边冒泡
+    // 第一个循环是数 第二个循环是改变位置
+    let ST = Date.now();
+    // let inArr = [52,28,73,68,51,13,1,92,94,112,9,61,57,98,62,70,6,24,97,86,88,108,114,31,65,63,2,26,19,42,80,79,17,118,89,27,38,50,113,95,100,47,53,18,107,4,117,99,22,45,30,29,58,20,23,49,82,48,110,69,115,67,25,36,59,21,109,120,34,8,15,14,103,10,74,41,7,16,87,81,78,106,44,39,56,105,43,72,3,54,33,32,93,35,37,55,5,60,40,11,101,46,64,66,76,102,71,84,85,83,90,75,119,77,96,104,116,91,111,12];
+    // let inArr = Array.from({length:20}).map((_,i)=> i).sort(_ => Math.random() < .5 ? -1 : 1)
+    // let inArr = window.arr_500W;
+    let inArr = window.arr_500W;
+    /** 分割数组 **/
+    function division(arr, left, right) {
+      // 调用后会消亡（可能）
+      let base = arr[left]; // Nlog2N空间复杂度
+      while (left < right) {
+        while (left < right && arr[right] >= base) right--;
+        arr[left] = arr[right];
+        while (left < right && arr[left] <= base) left++;
+        arr[right] = arr[left];
+      } // 时间复杂度
+      arr[left] = base;
+      // console.log(arr.slice());
+      return left;
+    }
+    /** 排序 **/
+    function quickSort(arr, left, right) {
+      if (left < right) {
+        let base = division(arr, left, right) // Nlog2N空间复杂度
+        quickSort(arr, left, base - 1); // 递归分割
+        quickSort(arr, base + 1, right);// 递归分割
+      }
+    }
+    quickSort(inArr, 0, inArr.length - 1);
+    /** （500W数据）思考上面的速度很快很快 700/下面的很慢4000 **/
+    // var quickSort = function (arr) {
+    //   if (arr.length <= 1)  return arr;
+    //   // 调用 Math下的方法 加大时间复杂度
+    //   var pivotIndex = Math.floor(arr.length / 2); // Nlog2N空间复杂度
+    //   var pivot = arr.splice(pivotIndex, 1)[0]; // Nlog2N空间复杂度
+    //   var left = []; // 增加了空间复杂度
+    //   var right = []; // 增加了空间复杂度
+    //   for (var i = 0; i < arr.length; i++) {
+    //     // 新组合数组加大时间复杂度和空间复杂度
+    //     arr[i] < pivot ? left.push(arr[i]) : right.push(arr[i]);
+    //   }
+    //   // 递归调用中调用了 Array.concat 加大时间复杂度
+    //   return quickSort(left).concat([pivot], quickSort(right));
+    // };
+    // inArr = quickSort(inArr)
+    let DT = Date.now();
+    console.log(DT - ST);
+    // console.log(inArr);
+
+    // 数据输出太久了
+    // document.querySelector('#app').innerHTML = toString(inArr);
+  </script>
+</body>
+
+</html>

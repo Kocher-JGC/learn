@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script src="../lib/util.js"></script>
+  <!-- <script src="../data/data.js"></script> -->
+  <!-- <script src="../data/12WData.js"></script> -->
+  <!-- <script src="../data/120WData.js"></script> -->
+  <script src="../data/500WData.js"></script>
+  <title>希尔排序（直接插入的威力加强）</title>
+</head>
+
+<body>
+  <div id="app"></div>
+  <script>
+    let ST = Date.now();
+    // let inArr = [52,28,73,68,51,13,1,92,94,112,9,61,57,98,62,70,6,24,97,86,88,108,114,31,65,63,2,26,19,42,80,79,17,118,89,27,38,50,113,95,100,47,53,18,107,4,117,99,22,45,30,29,58,20,23,49,82,48,110,69,115,67,25,36,59,21,109,120,34,8,15,14,103,10,74,41,7,16,87,81,78,106,44,39,56,105,43,72,3,54,33,32,93,35,37,55,5,60,40,11,101,46,64,66,76,102,71,84,85,83,90,75,119,77,96,104,116,91,111,12];
+    // let inArr = Array.from({length:20}).map((_,i)=> i).sort(_ => Math.random() < .5 ? -1 : 1)
+    /** 经过希尔排序加强后既然支持500W数据，普通的插入排序120W都动不了 **/
+    let inArr = window.arr_500W;
+    // 500W 性能
+    // [2353,2489,2156,2372,2223,2264,2170,2290,2079,2217,2073,2108,2126,2134,2042]
+    function shellSort(arr) {
+      let l = arr.length
+      let gap = Math.floor(l/2);
+      while (1 <= gap) {
+        for(let i = gap; i < l; i++) {
+          let j = i - gap;
+          let temp = arr[i];
+          // 除了增量外，其他和直接插入一样逻辑
+          for( ;j >= 0 && temp < arr[j]; ){
+            arr[j + gap] = arr[j];
+            j-=gap;
+          }
+          arr[j+gap] = temp;
+        }
+        gap = Math.floor(gap/2);
+      }
+    }
+    shellSort(inArr)
+    let DT = Date.now();
+    console.log(DT - ST);
+    console.log(inArr);
+
+    // 输出太慢了
+    // document.querySelector('#app').innerHTML = toString(inArr);
+
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script src="../lib/util.js"></script>
+  <!-- <script src="../data/data.js"></script> -->
+  <!-- <script src="../data/120WData.js"></script> -->
+  <script src="../data/12WData.js"></script>
+  <title>冒泡排序</title>
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+    // 1、小往左边冒泡，2、大往右边冒泡
+    // 第一个循环是数 第二个循环是改变位置
+    let ST = Date.now();
+    // let inArr = [52,28,73,68,51,13,1,92,94,112,9,61,57,98,62,70,6,24,97,86,88,108,114,31,65,63,2,26,19,42,80,79,17,118,89,27,38,50,113,95,100,47,53,18,107,4,117,99,22,45,30,29,58,20,23,49,82,48,110,69,115,67,25,36,59,21,109,120,34,8,15,14,103,10,74,41,7,16,87,81,78,106,44,39,56,105,43,72,3,54,33,32,93,35,37,55,5,60,40,11,101,46,64,66,76,102,71,84,85,83,90,75,119,77,96,104,116,91,111,12];
+    let inArr = window.arr_12W;
+    let l = inArr.length;
+    let isSort = true; let temp = 0;
+    let lastExchangeIndex = 0; // 最后一次交换的位置
+    let sortBorder = inArr.length - 1; // 无序数列的边界
+    // 普通
+    // for(let i =0;i<l;i++) {
+    //   isSort = true;
+    //   for(let j =0;j< sortBorder;j++){
+    //     if(inArr[j] > inArr[j+1]) {
+    //       temp = inArr[j];
+    //       inArr[j] = inArr[j+1];
+    //       inArr[j+1] = temp;
+    //       isSort = false;
+    //       lastExchangeIndex = j;
+    //     }
+    //   }
+    //   sortBorder = lastExchangeIndex; // 更新边界
+    //   if(isSort) break;
+    // }
+    //12W数据测试结果
+    // [31467,31565,30079,29772,29586,29900,29512,30121,29353,30156] // 30151.1
+
+    // 鸡尾酒
+    /** 向右冒泡完接着向左冒泡 **/
+    let lastRightExchangeIndex = 0; // 右侧最后交换的位置
+    let rightSortBorder = inArr.length - 1; // 右侧最后交换的边界
+    let lastLeftExchangeIndex = 0; // 左侧最后交换的位置
+    let leftSortBorder = 0; // 左侧无须数列的边界
+    let j;
+    for(let i=0;i<l/2;i++) {
+      isSort = true;
+      // 左边界到右边界
+      for(j= leftSortBorder;j<rightSortBorder;j++) {
+        if(inArr[j] > inArr[j+1]){
+          temp = inArr[j];
+          inArr[j] = inArr[j+1];
+          inArr[j+1]=temp;
+          isSort = false;
+          lastRightExchangeIndex = j;
+        }
+      }
+      //注意
+      rightSortBorder = lastRightExchangeIndex;
+      if(isSort) break;
+      //从右边边界开始到左边界
+      isSort = true;
+      for(j=rightSortBorder;j>leftSortBorder;j--){
+        if(inArr[j]<inArr[j-1]) {
+          temp = inArr[j];
+          inArr[j] = inArr[j-1];
+          inArr[j-1] = temp;
+          isSort = false;
+          lastLeftExchangeIndex = j;
+        }
+      }
+      leftSortBorder = lastLeftExchangeIndex;//注意
+      if(isSort) break;
+    }
+    //12W数据 [28309,26573,26261,26642,26151,28450,28330,26737,29144,26508,27001,27215,26545]
+    let ET = Date.now();
+    console.log(ET-ST);
+
+    // let result = 'inArr';
+
+    // let BasicArr = window.arr;
+
+    document.querySelector('#app').innerHTML = toString(inArr);
+
+  </script>
+</body>
+</html>

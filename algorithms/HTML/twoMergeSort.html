@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script src="../lib/util.js"></script>
+  <!-- <script src="../data/data.js"></script> -->
+  <script src="../data/12WData.js"></script>
+  <!-- <script src="../data/120WData.js"></script> -->
+  <!-- <script src="../data/500WData.js"></script> -->
+  <title>双路归并</title>
+</head>
+
+<body>
+  <div id="app"></div>
+<script>
+  function mergeSort(arr) { // 采用自上而下的递归方法
+    var len = arr.length;
+    if (len < 2) {
+      return arr;
+    }
+    var middle = Math.floor(len / 2),
+      left = arr.slice(0, middle),
+      right = arr.slice(middle);
+    return merge2(mergeSort(left), mergeSort(right));
+  }
+
+  function merge2(left, right) {
+    var result = [];
+    while (left.length > 0 && right.length > 0) {
+      if (left[0] <= right[0]) {
+        result.push(left.shift());
+      } else {
+        result.push(right.shift());
+      }
+    }
+    while (left.length)
+      result.push(left.shift());
+    while (right.length)
+      result.push(right.shift());
+    return result;
+  }
+  console.log(mergeSort(window.arr_12W));
+
+
+    let ST = Date.now();
+    let inArr = [52,28,73,68,51,13,1,92,94,112,9,61,57,98,62,70,6,24,97,86,88,108,114,31,65,63,2,26,19,42,80,79,17,118,89,27,38,50,113,95,100,47,53,18,107,4,117,99,22,45,30,29,58,20,23,49,82,48,110,69,115,67,25,36,59,21,109,120,34,8,15,14,103,10,74,41,7,16,87,81,78,106,44,39,56,105,43,72,3,54,33,32,93,35,37,55,5,60,40,11,101,46,64,66,76,102,71,84,85,83,90,75,119,77,96,104,116,91,111,12];
+    console.log(mergeSort(inArr));
+
+    // let inArr = Array.from({length:20}).map((_,i)=> i).sort(_ => Math.random() < .5 ? -1 : 1)
+    // let inArr = window.arr_120W;
+    // let inArr = window.arr_500W;
+    // [2493,2758,2753,2390,2656,2404,2432,2438,2402,2672,2544,2489,2438,2531,2440]
+    function merge(arr, low, mid, high) {
+      let i = low;// i是第一段序列的下标
+      let j = mid + 1;// j是第二段序列的下标
+      let k = 0; // k是临时存放合并序列的下标
+      let arr2 = []; // array2是临时合并序列
+       // 扫描第一段和第二段序列，直到有一个扫描结束
+      while (i <= mid && j <= high) {
+        // 判断第一段和第二段取出的数哪个更小，将其存入合并序列，并继续向下扫描
+        if (arr[i] <= arr[j]) {
+          arr2[k] = arr[i];
+          i++;
+          k++;
+        } else {
+          arr2[k] = arr[j];
+          j++;
+          k++;
+        }
+      }
+      // 若第一段序列还没扫描完，将其全部复制到合并序列
+      while (i <= mid) {
+        arr2[k] = arr[i];
+        i++;
+        k++;
+      }
+
+      // 若第二段序列还没扫描完，将其全部复制到合并序列
+      while (j <= high) {
+        arr2[k] = arr[j];
+        j++;
+        k++;
+      }
+
+      // 将合并序列复制到原始序列中
+      for (k = 0, i = low; i <= high; i++, k++)  arr[i] = arr2[k];
+    }
+    function MergePass(array, gap, length) {
+      let i = 0;
+      // 归并gap长度的两个相邻子表
+      for (; i + 2 * gap - 1 < length; i = i + 2 * gap) {
+        merge(array, i, i + gap - 1, i + 2 * gap - 1);
+      }
+
+      // 余下两个子表，后者长度小于gap
+      if (i + gap - 1 < length) {
+        merge(array, i, i + gap - 1, length - 1);
+      }
+    }
+
+
+    function twoMergeSort(arr) {
+      for (let gap = 1; gap < arr.length; gap = 2 * gap) {
+        // debugger
+        MergePass(arr, gap, arr.length);
+      }
+      return arr;
+    }
+    twoMergeSort(inArr)
+    let DT = Date.now();
+    console.log(DT - ST);
+    console.log(inArr);
+
+    document.querySelector('#app').innerHTML = toString(inArr);
+
+  </script>
+</body>
+
+</html>
