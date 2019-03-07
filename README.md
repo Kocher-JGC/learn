@@ -33,7 +33,7 @@
 
 ### Vuex
 
-1. [new Store](./frame_learn/vuex/logical-thinking/Markdown/new Store.md)
+1. [new Store](./frame_learn/vuex/logical-thinking/Markdown/Store.md)
 2. [API](./frame_learn/vuex/logical-thinking/Markdown/API.md)
 
 ## algorithms
