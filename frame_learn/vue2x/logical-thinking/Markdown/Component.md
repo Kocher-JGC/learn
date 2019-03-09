@@ -9,6 +9,10 @@
 >    - createElm （递归创建真实的DOM） （小心被绕晕哦）
 > 2. 你可能还需要理解helpers里面的各种工具方法 如 createAsyncPlaceholder 如何解析异步、高级异步组件
 
+#### 简单的图片说明
+
+![组件注册和实例的简单图片说明](../../../../assets/img/Component.png)
+
 # Vue.component 注册全局组件
 
 1. validateComponentName(id) --> 开发环境下验证component的名字
