@@ -4,6 +4,10 @@
 
 ## v-model (绑定在el上)
 
+#### 简单图片说明
+
+![v-model简单图片说明](../../../../assets/img/v-model.png)
+
 ```html
 <div id="app">
 <h3>v-model 绑定在DOM上</h3>
@@ -398,13 +402,13 @@ with(this){
 
 ### 在input中输入内容
 
-1. 因为在inputDOM上绑定了input事件 --> 
+1. 因为在inputDOM上绑定了input事件 -->
 2. 显然会触发methods中定义的updateValue --> （fn.withTash.fn --> invoker-->）
 
-2. Vue.\$emit(change) -->  就会主动触发vm._events['change']所有事件 --> (invoker --> )    callback:function ($$v) {message=$$v} --> 
-3. 正因为这一堆的语法糖改变了父组件的message --> 从而触发set --> 触发dep.notify() --> 
+2. Vue.\$emit(change) -->  就会主动触发vm._events['change']所有事件 --> (invoker --> )    callback:function ($$v) {message=$$v} -->
+3. 正因为这一堆的语法糖改变了父组件的message --> 从而触发set --> 触发dep.notify() -->
 4. 然后后面得步骤大家也跟着跑了很多次了，所以就简单跳过了 -->
-5. dep.notify --> watcher.update --> nextTick --> watcher.run() --> updateComponent --> 
+5. dep.notify --> watcher.update --> nextTick --> watcher.run() --> updateComponent -->
 6. 重新进行计算render以及updateChildren下面　diff进行更新DOM
 
 > v-model 基本完了（大部分流程都详细得走了，就是有时候子父通信可能不好理解，或者太绕了，一定要静心看。）
